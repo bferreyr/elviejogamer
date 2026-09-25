@@ -34,7 +34,7 @@ const observer = new IntersectionObserver((entries, observer) => {
 }, observerOptions);
 
 // Apply initial styles and observe elements
-document.querySelectorAll('.feature-card, .step, .booking-content h2').forEach(el => {
+document.querySelectorAll('.feature-card, .step, .booking-content h2, .setup-item').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';

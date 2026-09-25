@@ -426,6 +426,52 @@ h1, h2, h3, h4 {
     background: rgba(255,255,255,0.2);
 }
 
+/* Setup Section */
+.setup-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.setup-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.setup-item:hover {
+    background: rgba(229, 9, 20, 0.05);
+    border-color: rgba(229, 9, 20, 0.3);
+    transform: translateY(-5px);
+}
+
+.setup-item i {
+    width: 40px;
+    height: 40px;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.setup-item h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.setup-item p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 /* Booking */
 .booking {
     padding: 8rem 2rem;
