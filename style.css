@@ -36,6 +36,7 @@ h1, h2, h3, h4 {
 .text-gradient {
     background: linear-gradient(90deg, var(--primary), #ff4b4b);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -185,14 +186,14 @@ h1, h2, h3, h4 {
 .glitch::before {
     left: 2px;
     text-shadow: -2px 0 red;
-    clip: rect(24px, 550px, 90px, 0);
+    clip: rect(24px, 9999px, 90px, 0);
     animation: glitch-anim 3s infinite linear alternate-reverse;
 }
 
 .glitch::after {
     left: -2px;
     text-shadow: -2px 0 blue;
-    clip: rect(85px, 550px, 140px, 0);
+    clip: rect(85px, 9999px, 140px, 0);
     animation: glitch-anim 2.5s infinite linear alternate-reverse;
 }
 
