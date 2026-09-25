@@ -33,10 +33,43 @@ const observer = new IntersectionObserver((entries, observer) => {
     });
 }, observerOptions);
 
-// Apply initial styles and observe elements
 document.querySelectorAll('.feature-card, .step, .booking-content h2, .setup-item').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
     observer.observe(el);
 });
+
+// Load Gallery
+async function loadGallery() {
+    const galleryGrid = document.getElementById('gallery-grid');
+    if (!galleryGrid) return;
+
+    try {
+        const res = await fetch('/api/gallery');
+        if (!res.ok) throw new Error('API Error');
+        const data = await res.json();
+        
+        if (data.length === 0) {
+            galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: var(--text-muted);">Todavía no hay fotos de eventos. ¡Pronto subiremos!</p>';
+            return;
+        }
+
+        galleryGrid.innerHTML = data.map(item => {
+            if (item.type === 'video') {
+                return `
+                <div class="gallery-item">
+                    <video src="${item.url}" muted loop autoplay playsinline></video>
+                </div>`;
+            } else {
+                return `
+                <div class="gallery-item">
+                    <img src="${item.url}" alt="Evento El Viejo Gamer" loading="lazy">
+                </div>`;
+            }
+        }).join('');
+    } catch (e) {
+        galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: #ef4444;">No se pudo cargar la galería estática.</p>';
+    }
+}
+document.addEventListener('DOMContentLoaded', loadGallery);

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - El Viejo Gamer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .admin-panel {
+            background: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .admin-panel h2 {
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: white;
+        }
+        .primary-btn {
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        #status {
+            margin-top: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-panel">
+        <h2>Subir Eventos a la Galería</h2>
+        
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="password">Contraseña de Admin:</label>
+                <input type="password" id="password" required placeholder="Ingresar contraseña">
+            </div>
+            
+            <div class="form-group">
+                <label for="media">Foto o Video:</label>
+                <input type="file" id="media" accept="image/*,video/*" required>
+            </div>
+            
+            <button type="submit" class="primary-btn">Subir Archivo</button>
+        </form>
+
+        <div id="status"></div>
+        
+        <div style="margin-top: 2rem;">
+            <a href="/" style="color: var(--text-muted); text-decoration: none;">&larr; Volver a la página principal</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const fileInput = document.getElementById('media');
+            const file = fileInput.files[0];
+            const statusDiv = document.getElementById('status');
+            
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('media', file);
+
+            statusDiv.textContent = 'Subiendo...';
+            statusDiv.style.color = '#fff';
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': password
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.textContent = '¡Archivo subido exitosamente!';
+                    statusDiv.style.color = '#4ade80';
+                    fileInput.value = ''; // clear input
+                } else {
+                    statusDiv.textContent = 'Error: ' + data.error;
+                    statusDiv.style.color = '#ef4444';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Error de conexión.';
+                statusDiv.style.color = '#ef4444';
+            }
+        });
+    </script>
+</body>
+</html>
