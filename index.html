@@ -28,9 +28,14 @@
                 <a href="galeria.html">Galería</a>
                 <a href="#reservas">Reservas</a>
             </div>
-            <a href="https://wa.me/5493425900075" class="cta-btn" target="_blank">
-                <i data-lucide="message-circle"></i> Contactanos
-            </a>
+            <div class="nav-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <a id="navLoginBtn" href="/auth/steam" class="secondary-btn" style="padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="user"></i> Iniciar Sesión
+                </a>
+                <a href="https://wa.me/5493425900075" class="cta-btn" target="_blank">
+                    <i data-lucide="message-circle"></i> Contactanos
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -238,6 +243,27 @@
     </footer>
 
     <script src="script.js?v=2"></script>
+    <script>
+        // Check auth status
+        fetch('/api/current_user')
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error('Not logged in');
+            })
+            .then(user => {
+                const btn = document.getElementById('navLoginBtn');
+                if (btn) {
+                    btn.innerHTML = `<img src="${user.avatar_url}" style="width: 20px; height: 20px; border-radius: 50%;"> Mi Perfil`;
+                    btn.href = '/perfil.html';
+                    btn.style.background = 'var(--primary)';
+                    btn.style.color = '#000';
+                    btn.style.borderColor = 'var(--primary)';
+                }
+            })
+            .catch(() => {
+                // Not logged in, leave button as is
+            });
+    </script>
 </body>
 
 </html>

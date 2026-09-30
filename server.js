@@ -1,23 +1,116 @@
+require('dotenv').config();
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const SteamStrategy = require('passport-steam').Strategy;
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Pool } = require('pg');
 
 const app = express();
-const PORT = 3003; // We use the same port PM2 is currently using
+const PORT = process.env.PORT || 3003;
+
+// PostgreSQL Connection
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
 
 // Middleware
 app.use(express.json());
-app.use(express.static(__dirname)); // Serve all static files from root
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
+
+// Session setup
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'fallback_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } // 1 week
+}));
+
+// Passport setup
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+    done(null, user.steam_id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE steam_id = $1', [id]);
+        if (result.rows.length > 0) {
+            done(null, result.rows[0]);
+        } else {
+            done(null, false);
+        }
+    } catch (err) {
+        done(err, null);
+    }
+});
+
+// Solo registrar la estrategia si hay un API KEY
+if (process.env.STEAM_API_KEY && process.env.STEAM_API_KEY !== 'tu_steam_api_key') {
+    passport.use(new SteamStrategy({
+        returnURL: `${process.env.BASE_URL}/auth/steam/return`,
+        realm: `${process.env.BASE_URL}/`,
+        apiKey: process.env.STEAM_API_KEY
+      },
+      async (identifier, profile, done) => {
+        try {
+            const steamId = profile.id;
+            const displayName = profile.displayName;
+            const avatarUrl = profile.photos[2]?.value || profile.photos[0]?.value;
+            const profileUrl = profile._json.profileurl;
+    
+            const result = await pool.query(
+                `INSERT INTO users (steam_id, display_name, avatar_url, profile_url) 
+                 VALUES ($1, $2, $3, $4) 
+                 ON CONFLICT (steam_id) 
+                 DO UPDATE SET display_name = $2, avatar_url = $3, profile_url = $4
+                 RETURNING *`,
+                [steamId, displayName, avatarUrl, profileUrl]
+            );
+    
+            return done(null, result.rows[0]);
+        } catch (err) {
+            return done(err, null);
+        }
+      }
+    ));
+}
+
+// --- Auth Routes ---
+app.get('/auth/steam', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
+    res.redirect('/');
+});
+
+app.get('/auth/steam/return', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
+    res.redirect('/perfil.html');
+});
+
+app.get('/auth/logout', (req, res) => {
+    req.logout(() => {
+        res.redirect('/');
+    });
+});
+
+app.get('/api/current_user', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.json(req.user);
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
+});
 
 // Ensure directories exist
 const galleryPath = path.join(__dirname, 'assets', 'gallery');
-const dataPath = path.join(__dirname, 'data');
 if (!fs.existsSync(galleryPath)) fs.mkdirSync(galleryPath, { recursive: true });
-if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath, { recursive: true });
-
-const galleryJsonPath = path.join(dataPath, 'gallery.json');
-if (!fs.existsSync(galleryJsonPath)) fs.writeFileSync(galleryJsonPath, '[]');
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -32,21 +125,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API: Get gallery
-app.get('/api/gallery', (req, res) => {
+app.get('/api/gallery', async (req, res) => {
     try {
-        const data = fs.readFileSync(galleryJsonPath, 'utf8');
-        res.json(JSON.parse(data));
+        const result = await pool.query('SELECT * FROM gallery_media ORDER BY created_at DESC');
+        res.json(result.rows);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to read gallery data' });
     }
 });
 
 // API: Upload to gallery
-app.post('/api/upload', upload.single('media'), (req, res) => {
-    // Very basic password protection
+app.post('/api/upload', upload.single('media'), async (req, res) => {
     const password = req.headers['authorization'];
     if (password !== 'viejo123') { // Simple hardcoded password
-        // Also delete the file if unauthorized
         if (req.file) fs.unlinkSync(req.file.path);
         return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -56,27 +148,25 @@ app.post('/api/upload', upload.single('media'), (req, res) => {
     }
 
     try {
-        const gallery = JSON.parse(fs.readFileSync(galleryJsonPath, 'utf8'));
-        
-        const newMedia = {
-            id: Date.now(),
-            filename: req.file.filename,
-            type: req.file.mimetype.startsWith('video') ? 'video' : 'image',
-            url: `assets/gallery/${req.file.filename}`,
-            date: new Date().toISOString()
-        };
+        const filename = req.file.filename;
+        const type = req.file.mimetype.startsWith('video') ? 'video' : 'image';
+        const url = `assets/gallery/${filename}`;
+        const uploaderSteamId = req.isAuthenticated() ? req.user.steam_id : null;
 
-        gallery.unshift(newMedia); // Add to beginning
-        fs.writeFileSync(galleryJsonPath, JSON.stringify(gallery, null, 2));
+        const result = await pool.query(
+            'INSERT INTO gallery_media (filename, type, url, uploader_steam_id) VALUES ($1, $2, $3, $4) RETURNING *',
+            [filename, type, url, uploaderSteamId]
+        );
 
-        res.json({ success: true, media: newMedia });
+        res.json({ success: true, media: result.rows[0] });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to save media data' });
     }
 });
 
 // API: Delete from gallery
-app.delete('/api/gallery/:id', (req, res) => {
+app.delete('/api/gallery/:id', async (req, res) => {
     const password = req.headers['authorization'];
     if (password !== 'viejo123') {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -84,14 +174,13 @@ app.delete('/api/gallery/:id', (req, res) => {
 
     try {
         const id = parseInt(req.params.id);
-        let gallery = JSON.parse(fs.readFileSync(galleryJsonPath, 'utf8'));
         
-        const itemIndex = gallery.findIndex(item => item.id === id);
-        if (itemIndex === -1) {
+        const result = await pool.query('SELECT * FROM gallery_media WHERE id = $1', [id]);
+        if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Item not found' });
         }
 
-        const item = gallery[itemIndex];
+        const item = result.rows[0];
         
         // Delete file
         const filePath = path.join(__dirname, item.url);
@@ -99,12 +188,12 @@ app.delete('/api/gallery/:id', (req, res) => {
             fs.unlinkSync(filePath);
         }
 
-        // Remove from array and save
-        gallery.splice(itemIndex, 1);
-        fs.writeFileSync(galleryJsonPath, JSON.stringify(gallery, null, 2));
+        // Remove from db
+        await pool.query('DELETE FROM gallery_media WHERE id = $1', [id]);
 
         res.json({ success: true });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to delete media' });
     }
 });

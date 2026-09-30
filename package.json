@@ -19,7 +19,12 @@
   },
   "homepage": "https://github.com/bferreyr/elviejogamer#readme",
   "dependencies": {
+    "dotenv": "^18.0.4",
     "express": "^5.2.1",
-    "multer": "^2.4.0"
+    "express-session": "^1.19.0",
+    "multer": "^2.4.0",
+    "passport": "^0.7.0",
+    "passport-steam": "^1.0.18",
+    "pg": "^8.23.0"
   }
 }
