@@ -22,6 +22,7 @@ export default function Navbar() {
         <div className="nav-links">
           <Link to="/">Experiencia</Link>
           <Link to="/">Setup</Link>
+          <Link to="/jugadores">Jugadores</Link>
           <Link to="/partidas">Partidas</Link>
           <Link to="/galeria">Galería</Link>
         </div>

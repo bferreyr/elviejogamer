@@ -202,6 +202,203 @@ app.get('/api/current_user', async (req, res) => {
     }
 });
 
+// Helper function to calculate user stats (to reuse for any user)
+async function calculateUserStats(steam_id) {
+    const statsResult = await pool.query(`
+        SELECT
+            SUM((player->>'kills')::int) as total_kills,
+            SUM((player->>'deaths')::int) as total_deaths,
+            SUM((player->>'assists')::int) as total_assists,
+            SUM((player->>'headshots')::int) as total_headshots,
+            SUM((player->>'mvps')::int) as total_mvps,
+            SUM((player->>'damage')::int) as total_damage,
+            COUNT(m.id) as matches_played
+        FROM matches m, jsonb_array_elements(m.stats) as player
+        WHERE player->>'steam_id' = $1
+    `, [steam_id]);
+
+    const aggr = statsResult.rows[0];
+    let kd_ratio = 0;
+    let hs_percent = 0;
+    let total_kills = parseInt(aggr.total_kills || 0);
+    let total_deaths = parseInt(aggr.total_deaths || 0);
+    let total_headshots = parseInt(aggr.total_headshots || 0);
+    
+    if (total_deaths > 0) kd_ratio = total_kills / total_deaths;
+    else if (total_kills > 0) kd_ratio = total_kills;
+    
+    if (total_kills > 0) hs_percent = (total_headshots / total_kills) * 100;
+
+    const recentMatchesResult = await pool.query(`
+        SELECT m.id, m.map_name, m.team_ct_score, m.team_t_score, m.match_date, player
+        FROM matches m, jsonb_array_elements(m.stats) as player
+        WHERE player->>'steam_id' = $1
+        ORDER BY m.match_date DESC
+        LIMIT 30
+    `, [steam_id]);
+
+    const recentMatches = recentMatchesResult.rows;
+    let wins = 0;
+    recentMatches.forEach(rm => {
+        const pTeam = rm.player.team;
+        if (pTeam === 'CT' && rm.team_ct_score > rm.team_t_score) wins++;
+        if (pTeam === 'T' && rm.team_t_score > rm.team_ct_score) wins++;
+    });
+    const win_rate = recentMatches.length > 0 ? (wins / recentMatches.length) * 100 : 0;
+
+    return {
+        cs2_stats: {
+            total_kills,
+            total_deaths,
+            total_assists: parseInt(aggr.total_assists || 0),
+            total_headshots,
+            total_mvps: parseInt(aggr.total_mvps || 0),
+            total_damage: parseInt(aggr.total_damage || 0),
+            matches_played: parseInt(aggr.matches_played || 0),
+            kd_ratio,
+            hs_percent,
+            win_rate
+        },
+        recent_matches: recentMatches.map(rm => {
+            const kr = (rm.team_ct_score + rm.team_t_score) > 0 ? (rm.player.kills / (rm.team_ct_score + rm.team_t_score)) : 0;
+            const kd = rm.player.deaths > 0 ? (rm.player.kills / rm.player.deaths) : rm.player.kills;
+            const rating = rm.player.rating || (kd * 0.7 + kr * 0.3).toFixed(2);
+            let won = false;
+            if (rm.player.team === 'CT' && rm.team_ct_score > rm.team_t_score) won = true;
+            if (rm.player.team === 'T' && rm.team_t_score > rm.team_ct_score) won = true;
+
+            return {
+                id: rm.id,
+                map_name: rm.map_name,
+                date: rm.match_date,
+                score_ct: rm.team_ct_score,
+                score_t: rm.team_t_score,
+                won: won,
+                player_team: rm.player.team,
+                kills: rm.player.kills,
+                deaths: rm.player.deaths,
+                assists: rm.player.assists,
+                rating: parseFloat(rating).toFixed(2)
+            };
+        })
+    };
+}
+
+// API: Get specific user profile
+app.get('/api/users/:steam_id', async (req, res) => {
+    try {
+        const userResult = await pool.query('SELECT id, steam_id, display_name, avatar_url, profile_url FROM users WHERE steam_id = $1', [req.params.steam_id]);
+        if (userResult.rows.length === 0) return res.status(404).json({error: 'Usuario no encontrado'});
+        
+        const userObj = userResult.rows[0];
+        const stats = await calculateUserStats(userObj.steam_id);
+        
+        // Include friend status if logged in
+        if (req.isAuthenticated()) {
+            const friendQuery = await pool.query(`
+                SELECT status, user_id1, user_id2 FROM friends 
+                WHERE (user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1)
+            `, [req.user.id, userObj.id]);
+            
+            if (friendQuery.rows.length > 0) {
+                userObj.friend_status = friendQuery.rows[0].status;
+                // 'pending_sent' if current user sent it, 'pending_received' if the other user sent it
+                if (userObj.friend_status === 'pending') {
+                    userObj.friend_status = friendQuery.rows[0].user_id1 === req.user.id ? 'pending_sent' : 'pending_received';
+                }
+            } else {
+                userObj.friend_status = 'none';
+            }
+        }
+        
+        res.json({ ...userObj, ...stats });
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({error: 'Error de servidor'});
+    }
+});
+
+// API: Search users
+app.get('/api/users', async (req, res) => {
+    const query = req.query.q || '';
+    try {
+        const result = await pool.query(`
+            SELECT id, steam_id, display_name, avatar_url 
+            FROM users 
+            WHERE display_name ILIKE $1 
+            ORDER BY display_name ASC 
+            LIMIT 50
+        `, [`%${query}%`]);
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({error: 'Error searching users'});
+    }
+});
+
+// API: Friend requests
+app.post('/api/friends/add/:steam_id', async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({error: 'Not authenticated'});
+    try {
+        const targetResult = await pool.query('SELECT id FROM users WHERE steam_id = $1', [req.params.steam_id]);
+        if (targetResult.rows.length === 0) return res.status(404).json({error: 'Usuario no encontrado'});
+        const targetId = targetResult.rows[0].id;
+        
+        if (targetId === req.user.id) return res.status(400).json({error: 'No te podés agregar a vos mismo'});
+
+        // Check if already exists
+        const exists = await pool.query('SELECT * FROM friends WHERE (user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1)', [req.user.id, targetId]);
+        if (exists.rows.length > 0) return res.status(400).json({error: 'Ya existe una solicitud o son amigos'});
+
+        await pool.query('INSERT INTO friends (user_id1, user_id2, status) VALUES ($1, $2, $3)', [req.user.id, targetId, 'pending']);
+        res.json({success: true, status: 'pending_sent'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'Error interno'});
+    }
+});
+
+app.post('/api/friends/accept/:steam_id', async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({error: 'Not authenticated'});
+    try {
+        const targetResult = await pool.query('SELECT id FROM users WHERE steam_id = $1', [req.params.steam_id]);
+        if (targetResult.rows.length === 0) return res.status(404).json({error: 'Usuario no encontrado'});
+        const targetId = targetResult.rows[0].id;
+
+        // user_id2 must be req.user.id since they are the one receiving the request
+        await pool.query('UPDATE friends SET status = $1 WHERE user_id1 = $2 AND user_id2 = $3', ['accepted', targetId, req.user.id]);
+        res.json({success: true});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'Error interno'});
+    }
+});
+
+app.get('/api/friends', async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({error: 'Not authenticated'});
+    try {
+        // Pending requests received
+        const pending = await pool.query(`
+            SELECT u.steam_id, u.display_name, u.avatar_url 
+            FROM friends f
+            JOIN users u ON u.id = f.user_id1
+            WHERE f.user_id2 = $1 AND f.status = 'pending'
+        `, [req.user.id]);
+
+        // Friends
+        const friends = await pool.query(`
+            SELECT u.steam_id, u.display_name, u.avatar_url 
+            FROM friends f
+            JOIN users u ON (u.id = f.user_id1 OR u.id = f.user_id2)
+            WHERE (f.user_id1 = $1 OR f.user_id2 = $1) AND f.status = 'accepted' AND u.id != $1
+        `, [req.user.id]);
+
+        res.json({ pending: pending.rows, friends: friends.rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'Error interno'});
+    }
+});
+
 // Ensure directories exist
 const galleryPath = path.join(__dirname, 'assets', 'gallery');
 if (!fs.existsSync(galleryPath)) fs.mkdirSync(galleryPath, { recursive: true });

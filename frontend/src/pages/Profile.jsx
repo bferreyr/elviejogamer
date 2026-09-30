@@ -1,24 +1,53 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 export default function Profile() {
+  const { steam_id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [friendStatus, setFriendStatus] = useState('none'); // 'none', 'pending_sent', 'pending_received', 'accepted'
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
 
   useEffect(() => {
-    fetch('/api/current_user')
+    const url = steam_id ? `/api/users/${steam_id}` : '/api/current_user';
+    fetch(url)
       .then(res => {
-        if (!res.ok) throw new Error('Not logged in');
+        if (!res.ok) {
+          if (res.status === 401 && !steam_id) throw new Error('Not logged in');
+          if (res.status === 404) throw new Error('Not found');
+        }
         return res.json();
       })
       .then(data => {
         setUser(data);
+        if (!steam_id) setIsCurrentUser(true);
+        if (data.friend_status) setFriendStatus(data.friend_status);
         setLoading(false);
       })
-      .catch(() => {
-        window.location.href = '/';
+      .catch((err) => {
+        if (err.message === 'Not logged in') window.location.href = '/';
+        else {
+          console.error(err);
+          setLoading(false);
+        }
       });
-  }, []);
+  }, [steam_id]);
+
+  const handleAddFriend = () => {
+    fetch(`/api/friends/add/${user.steam_id}`, { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setFriendStatus('pending_sent');
+      });
+  };
+
+  const handleAcceptFriend = () => {
+    fetch(`/api/friends/accept/${user.steam_id}`, { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setFriendStatus('accepted');
+      });
+  };
 
   if (loading) {
     return (
@@ -58,8 +87,35 @@ export default function Profile() {
           </div>
           
           <div style={{marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-            <a href="/" style={{display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', textDecoration: 'none', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)'}}>Volver al Inicio</a>
-            <a href="/auth/logout" style={{display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', textDecoration: 'none', background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)'}}>Cerrar Sesión</a>
+            {isCurrentUser ? (
+              <>
+                <a href="/" style={{display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', textDecoration: 'none', background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)'}}>Volver al Inicio</a>
+                <a href="/auth/logout" style={{display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', textDecoration: 'none', background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)'}}>Cerrar Sesión</a>
+              </>
+            ) : (
+              <>
+                {friendStatus === 'none' && (
+                  <button onClick={handleAddFriend} style={{width: '100%', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', background: '#f97316', color: '#fff', border: 'none', cursor: 'pointer'}}>
+                    Agregar a amigos
+                  </button>
+                )}
+                {friendStatus === 'pending_sent' && (
+                  <button disabled style={{width: '100%', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', background: 'rgba(255,255,255,0.1)', color: '#9ca3af', border: '1px solid rgba(255,255,255,0.2)', cursor: 'not-allowed'}}>
+                    Solicitud enviada
+                  </button>
+                )}
+                {friendStatus === 'pending_received' && (
+                  <button onClick={handleAcceptFriend} style={{width: '100%', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', background: '#4ade80', color: '#064e3b', border: 'none', cursor: 'pointer'}}>
+                    Aceptar solicitud
+                  </button>
+                )}
+                {friendStatus === 'accepted' && (
+                  <button disabled style={{width: '100%', padding: '0.8rem', borderRadius: '8px', fontWeight: 'bold', background: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', cursor: 'default'}}>
+                    Amigos ✓
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </div>
 
