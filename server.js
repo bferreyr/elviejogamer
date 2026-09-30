@@ -173,32 +173,109 @@ app.put('/api/users/:id/admin', isAdmin, async (req, res) => {
     }
 });
 
-// API: Upload to gallery
-app.post('/api/upload', isAdmin, upload.single('media'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+// --- Album and Gallery API ---
+
+app.get('/api/albums', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT a.*, 
+            (SELECT url FROM gallery_media m WHERE m.album_id = a.id AND m.type = 'image' LIMIT 1) as cover_url
+            FROM gallery_albums a
+            ORDER BY a.event_date DESC, a.created_at DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch albums' });
+    }
+});
+
+app.post('/api/albums', isAdmin, async (req, res) => {
+    try {
+        const { title, event_date } = req.body;
+        const result = await pool.query(
+            'INSERT INTO gallery_albums (title, event_date) VALUES ($1, $2) RETURNING *',
+            [title, event_date]
+        );
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create album' });
+    }
+});
+
+app.delete('/api/albums/:id', isAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        
+        // Delete physical files first
+        const media = await pool.query('SELECT url FROM gallery_media WHERE album_id = $1', [id]);
+        media.rows.forEach(item => {
+            const filePath = path.join(__dirname, item.url);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        });
+        
+        // cascade delete should handle db records, but let's be explicit just in case
+        await pool.query('DELETE FROM gallery_media WHERE album_id = $1', [id]);
+        await pool.query('DELETE FROM gallery_albums WHERE id = $1', [id]);
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete album' });
+    }
+});
+
+app.get('/api/gallery/:album_id', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM gallery_media WHERE album_id = $1 ORDER BY created_at DESC', [req.params.album_id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch gallery' });
+    }
+});
+
+// API: Upload to gallery (multiple files)
+app.post('/api/upload', isAdmin, upload.array('media', 50), async (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'No files uploaded' });
+    }
+
+    const album_id = req.body.album_id;
+    if (!album_id) {
+        // cleanup files if album_id is missing
+        req.files.forEach(file => fs.unlinkSync(file.path));
+        return res.status(400).json({ error: 'Album ID is required' });
     }
 
     try {
-        const filename = req.file.filename;
-        const type = req.file.mimetype.startsWith('video') ? 'video' : 'image';
-        const url = `assets/gallery/${filename}`;
         const uploaderSteamId = req.user.steam_id;
+        const insertedMedia = [];
 
-        const result = await pool.query(
-            'INSERT INTO gallery_media (filename, type, url, uploader_steam_id) VALUES ($1, $2, $3, $4) RETURNING *',
-            [filename, type, url, uploaderSteamId]
-        );
+        for (const file of req.files) {
+            const filename = file.filename;
+            const type = file.mimetype.startsWith('video') ? 'video' : 'image';
+            const url = `assets/gallery/${filename}`;
 
-        res.json({ success: true, media: result.rows[0] });
+            const result = await pool.query(
+                'INSERT INTO gallery_media (filename, type, url, uploader_steam_id, album_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                [filename, type, url, uploaderSteamId, album_id]
+            );
+            insertedMedia.push(result.rows[0]);
+        }
+
+        res.json({ success: true, media: insertedMedia });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to save media data' });
     }
 });
 
-// API: Delete from gallery
-app.delete('/api/gallery/:id', isAdmin, async (req, res) => {
+// API: Delete from gallery (individual item)
+app.delete('/api/gallery/item/:id', isAdmin, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         

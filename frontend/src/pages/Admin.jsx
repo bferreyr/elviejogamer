@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, ShieldOff } from 'lucide-react';
+import { Shield, ShieldOff, FolderPlus, UploadCloud, Trash2 } from 'lucide-react';
 
 export default function Admin() {
   const [currentUser, setCurrentUser] = useState(null);
-  const [items, setItems] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [users, setUsers] = useState([]);
-  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Formularios
+  const [newAlbumTitle, setNewAlbumTitle] = useState('');
+  const [newAlbumDate, setNewAlbumDate] = useState('');
+  
+  const [selectedAlbumId, setSelectedAlbumId] = useState('');
+  const [files, setFiles] = useState([]);
   const [status, setStatus] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const loadInitialData = async () => {
     try {
@@ -19,7 +25,7 @@ export default function Admin() {
       setCurrentUser(userData);
 
       if (userData.is_admin) {
-        loadGallery();
+        loadAlbums();
         loadUsers();
       }
     } catch (err) {
@@ -29,11 +35,11 @@ export default function Admin() {
     }
   };
 
-  const loadGallery = async () => {
+  const loadAlbums = async () => {
     try {
-      const res = await fetch('/api/gallery');
+      const res = await fetch('/api/albums');
       const data = await res.json();
-      setItems(data);
+      setAlbums(data);
     } catch (err) {
       console.error(err);
     }
@@ -55,15 +61,62 @@ export default function Admin() {
     loadInitialData();
   }, []);
 
+  const handleCreateAlbum = async (e) => {
+    e.preventDefault();
+    if (!newAlbumTitle || !newAlbumDate) return;
+
+    try {
+      const res = await fetch('/api/albums', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newAlbumTitle, event_date: newAlbumDate })
+      });
+      if (res.ok) {
+        setNewAlbumTitle('');
+        setNewAlbumDate('');
+        loadAlbums();
+      } else {
+        alert("Error al crear álbum");
+      }
+    } catch (err) {
+      alert("Error de conexión");
+    }
+  };
+
+  const handleDeleteAlbum = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este álbum y TODAS sus fotos?")) return;
+
+    try {
+      const res = await fetch(`/api/albums/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        loadAlbums();
+      } else {
+        alert("Error al eliminar");
+      }
+    } catch (err) {
+      alert("Error de conexión");
+    }
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return;
+    if (!selectedAlbumId) {
+      alert("Debes seleccionar un álbum.");
+      return;
+    }
+    if (!files || files.length === 0) {
+      alert("Debes seleccionar al menos una foto o video.");
+      return;
+    }
 
     const formData = new FormData();
-    formData.append('media', file);
+    formData.append('album_id', selectedAlbumId);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('media', files[i]);
+    }
 
     setUploading(true);
-    setStatus('Subiendo...');
+    setStatus(`Subiendo ${files.length} archivo(s)...`);
 
     try {
       const response = await fetch('/api/upload', {
@@ -73,10 +126,10 @@ export default function Admin() {
       const data = await response.json();
 
       if (response.ok) {
-        setStatus('¡Archivo subido exitosamente!');
-        setFile(null);
+        setStatus('¡Archivos subidos exitosamente!');
+        setFiles([]);
         document.getElementById('mediaInput').value = '';
-        loadGallery();
+        loadAlbums();
         setTimeout(() => setStatus(''), 3000);
       } else {
         setStatus('Error: ' + data.error);
@@ -85,24 +138,6 @@ export default function Admin() {
       setStatus('Error de conexión.');
     } finally {
       setUploading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este archivo?")) return;
-
-    try {
-      const res = await fetch(`/api/gallery/${id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        loadGallery();
-      } else {
-        const data = await res.json();
-        alert("Error: " + data.error);
-      }
-    } catch (err) {
-      alert("Error de conexión al eliminar.");
     }
   };
 
@@ -125,9 +160,7 @@ export default function Admin() {
     }
   };
 
-  if (loading) {
-    return <div style={{textAlign: 'center', marginTop: '100px', color: 'var(--primary)'}}>Verificando permisos...</div>;
-  }
+  if (loading) return <div style={{textAlign: 'center', marginTop: '100px', color: 'var(--primary)'}}>Verificando permisos...</div>;
 
   if (!currentUser || !currentUser.is_admin) {
     return (
@@ -146,48 +179,113 @@ export default function Admin() {
         <Link to="/galeria" className="btn-back" style={{color: '#9ca3af', textDecoration: 'none'}}>&larr; Volver a la galería</Link>
       </header>
 
-      <div className="dashboard-grid" style={{display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', marginBottom: '2rem'}}>
+      <div className="dashboard-grid" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem'}}>
+        {/* Crear Album */}
         <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px'}}>
-          <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>Subir Evento</h2>
-          <form onSubmit={handleUpload}>
+          <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}><FolderPlus size={24}/> Crear Nuevo Álbum</h2>
+          <form onSubmit={handleCreateAlbum}>
+            <div className="form-group" style={{marginBottom: '1rem'}}>
+              <label style={{display: 'block', marginBottom: '0.5rem'}}>Título del Álbum:</label>
+              <input 
+                type="text" 
+                required 
+                placeholder="Ej: Torneo Counter-Strike"
+                value={newAlbumTitle}
+                onChange={(e) => setNewAlbumTitle(e.target.value)}
+                style={{width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '6px'}}
+              />
+            </div>
             <div className="form-group" style={{marginBottom: '1.5rem'}}>
-              <label style={{display: 'block', marginBottom: '0.5rem'}}>Foto o Video:</label>
+              <label style={{display: 'block', marginBottom: '0.5rem'}}>Fecha del Evento:</label>
+              <input 
+                type="date" 
+                required 
+                value={newAlbumDate}
+                onChange={(e) => setNewAlbumDate(e.target.value)}
+                style={{width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '6px'}}
+              />
+            </div>
+            <button type="submit" style={{width: '100%', padding: '1rem', background: 'rgba(74,222,128,0.2)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.4)', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}>
+              Crear Álbum
+            </button>
+          </form>
+        </div>
+
+        {/* Subir Fotos */}
+        <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px'}}>
+          <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}><UploadCloud size={24}/> Subir Fotos al Álbum</h2>
+          <form onSubmit={handleUpload}>
+            <div className="form-group" style={{marginBottom: '1rem'}}>
+              <label style={{display: 'block', marginBottom: '0.5rem'}}>Seleccionar Álbum:</label>
+              <select 
+                required 
+                value={selectedAlbumId}
+                onChange={(e) => setSelectedAlbumId(e.target.value)}
+                style={{width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '6px'}}
+              >
+                <option value="">-- Elegir un álbum --</option>
+                {albums.map(a => (
+                  <option key={a.id} value={a.id}>{a.title} ({new Date(a.event_date).toLocaleDateString()})</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{marginBottom: '1.5rem'}}>
+              <label style={{display: 'block', marginBottom: '0.5rem'}}>Fotos o Videos (Múltiples):</label>
               <input 
                 id="mediaInput"
                 type="file" 
                 accept="image/*,video/*" 
+                multiple
                 required 
-                onChange={(e) => setFile(e.target.files[0])}
+                onChange={(e) => setFiles(e.target.files)}
                 style={{width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', borderRadius: '6px'}}
               />
             </div>
-            <button type="submit" disabled={uploading} style={{width: '100%', padding: '1rem', background: 'var(--primary)', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: uploading ? 'not-allowed' : 'pointer'}}>
-              {uploading ? 'Subiendo...' : 'Subir Archivo'}
+            <button type="submit" disabled={uploading || !selectedAlbumId} style={{width: '100%', padding: '1rem', background: 'var(--primary)', color: '#000', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: uploading ? 'not-allowed' : 'pointer'}}>
+              {uploading ? status : 'Subir Archivos'}
             </button>
           </form>
-          <div style={{marginTop: '1rem', textAlign: 'center', color: status.includes('Error') ? '#ef4444' : '#4ade80'}}>{status}</div>
-        </div>
-
-        <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px'}}>
-          <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>Administrar Galería</h2>
-          <div className="gallery-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem'}}>
-            {items.map(item => (
-              <div key={item.id} className="gallery-item" style={{position: 'relative', borderRadius: '8px', overflow: 'hidden', aspectRatio: '16/9', background: '#000'}}>
-                {item.type === 'video' ? (
-                  <video src={`/${item.url}`} muted style={{width: '100%', height: '100%', objectFit: 'cover'}}></video>
-                ) : (
-                  <img src={`/${item.url}`} alt="Gallery item" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                )}
-                <button 
-                  onClick={() => handleDelete(item.id)}
-                  style={{position: 'absolute', top: '5px', right: '5px', background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem'}}
-                >Borrar</button>
-              </div>
-            ))}
-          </div>
+          {status && !uploading && <div style={{marginTop: '1rem', textAlign: 'center', color: status.includes('Error') ? '#ef4444' : '#4ade80'}}>{status}</div>}
         </div>
       </div>
 
+      {/* Lista de Álbumes */}
+      <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px', marginBottom: '2rem'}}>
+        <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>Álbumes Existentes</h2>
+        <div style={{overflowX: 'auto'}}>
+          <table style={{width: '100%', borderCollapse: 'collapse', textAlign: 'left'}}>
+            <thead>
+              <tr style={{borderBottom: '1px solid rgba(255,255,255,0.1)'}}>
+                <th style={{padding: '1rem'}}>ID</th>
+                <th style={{padding: '1rem'}}>Título</th>
+                <th style={{padding: '1rem'}}>Fecha del Evento</th>
+                <th style={{padding: '1rem', textAlign: 'right'}}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {albums.length === 0 && <tr><td colSpan="4" style={{padding: '1rem', textAlign: 'center', color: '#9ca3af'}}>No hay álbumes creados.</td></tr>}
+              {albums.map(album => (
+                <tr key={album.id} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}>
+                  <td style={{padding: '1rem', color: '#9ca3af'}}>#{album.id}</td>
+                  <td style={{padding: '1rem', fontWeight: 'bold'}}>{album.title}</td>
+                  <td style={{padding: '1rem'}}>{new Date(album.event_date).toLocaleDateString()}</td>
+                  <td style={{padding: '1rem', textAlign: 'right'}}>
+                    <Link to={`/galeria/${album.id}`} style={{marginRight: '1rem', color: 'var(--primary)', textDecoration: 'none'}}>Ver Fotos</Link>
+                    <button 
+                      onClick={() => handleDeleteAlbum(album.id)}
+                      style={{background: 'rgba(239,68,68,0.2)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.4)', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem'}}
+                    >
+                      <Trash2 size={16} /> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Lista de Usuarios */}
       <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px'}}>
         <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>Administrar Usuarios</h2>
         <div style={{overflowX: 'auto'}}>
