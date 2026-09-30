@@ -10,7 +10,11 @@ export default function Gallery() {
     fetch('/api/albums')
       .then(res => res.json())
       .then(data => {
-        setAlbums(data);
+        if (Array.isArray(data)) {
+          setAlbums(data);
+        } else {
+          setAlbums([]);
+        }
         setLoading(false);
       })
       .catch(err => {

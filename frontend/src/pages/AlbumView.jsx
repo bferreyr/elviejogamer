@@ -22,7 +22,11 @@ export default function AlbumView() {
     fetch(`/api/gallery/${id}`)
       .then(res => res.json())
       .then(data => {
-        setItems(data);
+        if (Array.isArray(data)) {
+          setItems(data);
+        } else {
+          setItems([]);
+        }
         setLoading(false);
       })
       .catch(err => {

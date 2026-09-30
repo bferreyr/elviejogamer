@@ -39,7 +39,11 @@ export default function Admin() {
     try {
       const res = await fetch('/api/albums');
       const data = await res.json();
-      setAlbums(data);
+      if (Array.isArray(data)) {
+        setAlbums(data);
+      } else {
+        setAlbums([]);
+      }
     } catch (err) {
       console.error(err);
     }
