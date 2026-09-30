@@ -134,6 +134,26 @@ app.get('/api/current_user', async (req, res) => {
             
             if (total_kills > 0) hs_percent = (total_headshots / total_kills) * 100;
 
+            // Fetch recent matches
+            const recentMatchesResult = await pool.query(`
+                SELECT m.id, m.map_name, m.team_ct_score, m.team_t_score, m.match_date, player
+                FROM matches m, jsonb_array_elements(m.stats) as player
+                WHERE player->>'steam_id' = $1
+                ORDER BY m.match_date DESC
+                LIMIT 30
+            `, [req.user.steam_id]);
+
+            const recentMatches = recentMatchesResult.rows;
+
+            // Calculate win rate
+            let wins = 0;
+            recentMatches.forEach(rm => {
+                const pTeam = rm.player.team;
+                if (pTeam === 'CT' && rm.team_ct_score > rm.team_t_score) wins++;
+                if (pTeam === 'T' && rm.team_t_score > rm.team_ct_score) wins++;
+            });
+            const win_rate = recentMatches.length > 0 ? (wins / recentMatches.length) * 100 : 0;
+
             const extendedUser = {
                 ...req.user,
                 cs2_stats: {
@@ -145,8 +165,32 @@ app.get('/api/current_user', async (req, res) => {
                     total_damage: parseInt(aggr.total_damage || 0),
                     matches_played: parseInt(aggr.matches_played || 0),
                     kd_ratio,
-                    hs_percent
-                }
+                    hs_percent,
+                    win_rate
+                },
+                recent_matches: recentMatches.map(rm => {
+                    const kr = (rm.team_ct_score + rm.team_t_score) > 0 ? (rm.player.kills / (rm.team_ct_score + rm.team_t_score)) : 0;
+                    const kd = rm.player.deaths > 0 ? (rm.player.kills / rm.player.deaths) : rm.player.kills;
+                    const rating = rm.player.rating || (kd * 0.7 + kr * 0.3).toFixed(2);
+                    
+                    let won = false;
+                    if (rm.player.team === 'CT' && rm.team_ct_score > rm.team_t_score) won = true;
+                    if (rm.player.team === 'T' && rm.team_t_score > rm.team_ct_score) won = true;
+
+                    return {
+                        id: rm.id,
+                        map_name: rm.map_name,
+                        date: rm.match_date,
+                        score_ct: rm.team_ct_score,
+                        score_t: rm.team_t_score,
+                        won: won,
+                        player_team: rm.player.team,
+                        kills: rm.player.kills,
+                        deaths: rm.player.deaths,
+                        assists: rm.player.assists,
+                        rating: parseFloat(rating).toFixed(2)
+                    };
+                })
             };
             res.json(extendedUser);
         } catch (error) {

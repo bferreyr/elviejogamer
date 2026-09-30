@@ -793,11 +793,17 @@ footer {
     gap: 1rem;
 }
 
-.profile-stats-grid {
+.profile-layout {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+}
+
+.profile-stats-box-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .match-list-item-flex {
@@ -817,8 +823,8 @@ footer {
     .hero-actions { flex-direction: column; }
     .nav-links { display: none; }
     
-    .dashboard-grid, .match-mvp-grid, .profile-stats-grid {
-        grid-template-columns: 1fr;
+    .dashboard-grid, .match-mvp-grid, .profile-layout, .profile-stats-box-grid {
+        grid-template-columns: 1fr !important;
     }
 
     .mvp-stats-grid {
