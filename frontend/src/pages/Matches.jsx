@@ -61,7 +61,7 @@ export default function Matches() {
                   onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
                   onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'}
                   >
-                    <div style={{display: 'flex', alignItems: 'center', gap: '2rem'}}>
+                    <div className="match-list-item-flex">
                       <div style={{width: '100px', textAlign: 'center'}}>
                         <div style={{fontSize: '0.8rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem'}}>Mapa</div>
                         <div style={{fontWeight: 'bold', fontSize: '1.2rem'}}>{match.map_name}</div>

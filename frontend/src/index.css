@@ -755,7 +755,58 @@ footer {
     border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Responsive */
+/* Responsive Classes for JSX Components */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.match-mvp-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.mvp-stats-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-content: center;
+    padding-left: 2rem;
+}
+
+.match-hero-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.match-hero-teams {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.match-list-item-flex {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Responsive Overrides */
 @media (max-width: 900px) {
     .booking-container {
         grid-template-columns: 1fr;
@@ -765,4 +816,54 @@ footer {
     .divider { width: 60px; height: 2px; }
     .hero-actions { flex-direction: column; }
     .nav-links { display: none; }
+    
+    .dashboard-grid, .match-mvp-grid, .profile-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mvp-stats-grid {
+        padding-left: 0;
+        margin-top: 1.5rem;
+        gap: 1rem;
+    }
+
+    .match-hero-flex {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .match-hero-teams {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .match-hero-teams .team-score {
+        order: -1;
+    }
+
+    .match-list-item-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .nav-actions .secondary-btn span {
+        display: none; /* Hide text on mobile buttons if space is tight */
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Adjust font sizes for mobile MatchDetails */
+    .match-hero-flex span {
+        font-size: 2.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .glitch { font-size: 2.5rem; }
+    .logo span { display: none; } /* Show only logo image on very small screens */
+    .section-header h2 { font-size: 2rem; }
+    .feature-card { padding: 1.5rem; }
 }

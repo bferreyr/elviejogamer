@@ -183,7 +183,7 @@ export default function Admin() {
         <Link to="/galeria" className="btn-back" style={{color: '#9ca3af', textDecoration: 'none'}}>&larr; Volver a la galería</Link>
       </header>
 
-      <div className="dashboard-grid" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem'}}>
+      <div className="dashboard-grid">
         {/* Crear Album */}
         <div className="admin-card" style={{background: 'rgba(25,25,30,0.8)', padding: '2rem', borderRadius: '12px'}}>
           <h2 style={{borderBottom: '2px solid var(--primary)', display: 'inline-block', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}><FolderPlus size={24}/> Crear Nuevo Álbum</h2>

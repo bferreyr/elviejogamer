@@ -150,7 +150,7 @@ export default function MatchDetails() {
             Promedio del equipo <strong style={{color: '#fff'}}>-</strong>
           </div>
         </div>
-        <div style={{overflowX: 'auto'}}>
+        <div className="table-responsive">
           <table style={{width: '100%', borderCollapse: 'collapse', textAlign: 'center', whiteSpace: 'nowrap'}}>
             <thead>
               <tr style={{background: '#131315', color: '#9ca3af', fontSize: '0.75rem', textTransform: 'uppercase'}}>
@@ -218,8 +218,8 @@ export default function MatchDetails() {
             </div>
           </div>
 
-          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '2rem', marginTop: '1rem'}}>
-            <div style={{textAlign: 'right', display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          <div className="match-hero-flex">
+            <div className="match-hero-teams" style={{textAlign: 'right'}}>
               <div>
                 {ctWon && <div style={{color: '#4ade80', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '2px', marginBottom: '0.5rem'}}>GANADOR</div>}
                 <div style={{fontSize: '2rem', fontWeight: '900', color: '#fff'}}>Equipo CT</div>
@@ -228,12 +228,12 @@ export default function MatchDetails() {
             </div>
             
             <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <span style={{fontSize: '4rem', fontWeight: '900', color: ctWon ? '#4ade80' : '#fff', textShadow: '0 0 20px rgba(74,222,128,0.3)'}}>{match.team_ct_score}</span>
+              <span className="team-score" style={{fontSize: '4rem', fontWeight: '900', color: ctWon ? '#4ade80' : '#fff', textShadow: '0 0 20px rgba(74,222,128,0.3)'}}>{match.team_ct_score}</span>
               <span style={{fontSize: '1.5rem', color: '#6b7280', fontWeight: 'bold'}}>VS</span>
-              <span style={{fontSize: '4rem', fontWeight: '900', color: tWon ? '#4ade80' : '#fff', textShadow: '0 0 20px rgba(74,222,128,0.3)'}}>{match.team_t_score}</span>
+              <span className="team-score" style={{fontSize: '4rem', fontWeight: '900', color: tWon ? '#4ade80' : '#fff', textShadow: '0 0 20px rgba(74,222,128,0.3)'}}>{match.team_t_score}</span>
             </div>
 
-            <div style={{textAlign: 'left', display: 'flex', alignItems: 'center', gap: '1rem'}}>
+            <div className="match-hero-teams" style={{textAlign: 'left'}}>
               <div style={{width: '60px', height: '60px', borderRadius: '50%', background: '#eab308', border: '3px solid rgba(255,255,255,0.1)'}}></div>
               <div>
                 {tWon && <div style={{color: '#4ade80', fontSize: '0.8rem', fontWeight: 'bold', letterSpacing: '2px', marginBottom: '0.5rem'}}>GANADOR</div>}
@@ -252,7 +252,7 @@ export default function MatchDetails() {
 
         {/* MVP HIGHLIGHT SECTION */}
         {matchMvp && (
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 350px', gap: '1.5rem', marginBottom: '3rem'}}>
+          <div className="match-mvp-grid">
             {/* MVP MAIN CARD */}
             <div style={{
               background: `linear-gradient(135deg, #18181b 0%, #09090b 100%)`,
@@ -278,7 +278,7 @@ export default function MatchDetails() {
                   <h2 style={{margin: 0, fontSize: '1.5rem', color: '#fff'}}>{matchMvp.name}</h2>
                 </div>
 
-                <div style={{flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignContent: 'center', paddingLeft: '2rem'}}>
+                <div className="mvp-stats-grid">
                   <div>
                     <div style={{fontSize: '2.5rem', fontWeight: '900', color: '#4ade80', lineHeight: 1}}>{matchMvp.rating}</div>
                     <div style={{color: '#9ca3af', fontSize: '0.8rem', fontWeight: 'bold'}}>★ Rating</div>

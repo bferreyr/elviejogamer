@@ -38,7 +38,7 @@ export default function Profile() {
         <h1 style={{fontSize: '2.5rem', fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(to right, #fff, #a0a0a0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>{user.display_name}</h1>
         <p style={{color: '#9ca3af', fontSize: '1rem', marginBottom: '2rem', fontFamily: 'monospace'}}>SteamID: {user.steam_id}</p>
 
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1.5rem', marginBottom: '2.5rem'}}>
+        <div className="profile-stats-grid">
           <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
             <div style={{fontSize: '2rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem'}}>{parseFloat(user.kd_ratio).toFixed(2)}</div>
             <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>K/D Ratio CS2</div>
