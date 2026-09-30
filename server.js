@@ -205,7 +205,7 @@ app.delete('/api/gallery/:id', async (req, res) => {
 });
 
 // React Router fallback (MUST BE THE LAST ROUTE)
-app.get('*', (req, res) => {
+app.get(/.*$/, (req, res) => {
     res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
