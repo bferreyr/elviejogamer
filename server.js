@@ -106,9 +106,53 @@ app.get('/auth/logout', (req, res) => {
     });
 });
 
-app.get('/api/current_user', (req, res) => {
+app.get('/api/current_user', async (req, res) => {
     if (req.isAuthenticated()) {
-        res.json(req.user);
+        try {
+            const statsResult = await pool.query(`
+                SELECT
+                    SUM((player->>'kills')::int) as total_kills,
+                    SUM((player->>'deaths')::int) as total_deaths,
+                    SUM((player->>'assists')::int) as total_assists,
+                    SUM((player->>'headshots')::int) as total_headshots,
+                    SUM((player->>'mvps')::int) as total_mvps,
+                    SUM((player->>'damage')::int) as total_damage,
+                    COUNT(m.id) as matches_played
+                FROM matches m, jsonb_array_elements(m.stats) as player
+                WHERE player->>'steam_id' = $1
+            `, [req.user.steam_id]);
+
+            const aggr = statsResult.rows[0];
+            let kd_ratio = 0;
+            let hs_percent = 0;
+            let total_kills = parseInt(aggr.total_kills || 0);
+            let total_deaths = parseInt(aggr.total_deaths || 0);
+            let total_headshots = parseInt(aggr.total_headshots || 0);
+            
+            if (total_deaths > 0) kd_ratio = total_kills / total_deaths;
+            else if (total_kills > 0) kd_ratio = total_kills;
+            
+            if (total_kills > 0) hs_percent = (total_headshots / total_kills) * 100;
+
+            const extendedUser = {
+                ...req.user,
+                cs2_stats: {
+                    total_kills,
+                    total_deaths,
+                    total_assists: parseInt(aggr.total_assists || 0),
+                    total_headshots,
+                    total_mvps: parseInt(aggr.total_mvps || 0),
+                    total_damage: parseInt(aggr.total_damage || 0),
+                    matches_played: parseInt(aggr.matches_played || 0),
+                    kd_ratio,
+                    hs_percent
+                }
+            };
+            res.json(extendedUser);
+        } catch (error) {
+            console.error('Error fetching user stats:', error);
+            res.json(req.user);
+        }
     } else {
         res.status(401).json({ error: 'Not authenticated' });
     }

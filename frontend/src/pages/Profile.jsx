@@ -30,7 +30,7 @@ export default function Profile() {
 
   return (
     <div style={{minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 2rem 2rem'}}>
-      <div className="profile-container" style={{background: 'rgba(25,25,30,0.8)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '3rem', maxWidth: '600px', width: '100%', textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.6)', backdropFilter: 'blur(15px)'}}>
+      <div className="profile-container" style={{background: 'rgba(25,25,30,0.8)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '3rem', maxWidth: '800px', width: '100%', textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.6)', backdropFilter: 'blur(15px)'}}>
         <div style={{position: 'relative', width: '150px', height: '150px', margin: '0 auto 2rem', borderRadius: '50%', padding: '5px', background: 'linear-gradient(135deg, var(--primary), #3b82f6)'}}>
           <img src={user.avatar_url} alt="Avatar" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--bg-main)'}} />
         </div>
@@ -40,12 +40,28 @@ export default function Profile() {
 
         <div className="profile-stats-grid">
           <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
-            <div style={{fontSize: '2rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem'}}>{parseFloat(user.kd_ratio).toFixed(2)}</div>
-            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>K/D Ratio CS2</div>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem'}}>{user.cs2_stats?.kd_ratio ? parseFloat(user.cs2_stats.kd_ratio).toFixed(2) : '0.00'}</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>K/D Ratio</div>
           </div>
           <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
-            <div style={{fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem', marginTop: '0.5rem'}}>Próximamente</div>
-            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>Rango Local</div>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: '#4ade80', marginBottom: '0.5rem'}}>{user.cs2_stats?.hs_percent ? Math.round(user.cs2_stats.hs_percent) : '0'}%</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>Headshots</div>
+          </div>
+          <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: '#facc15', marginBottom: '0.5rem'}}>{user.cs2_stats?.total_mvps || 0}</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>MVPs Total</div>
+          </div>
+          <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: '#3b82f6', marginBottom: '0.5rem'}}>{user.cs2_stats?.matches_played || 0}</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>Partidas</div>
+          </div>
+          <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: '#fff', marginBottom: '0.5rem'}}>{user.cs2_stats?.total_kills || 0}</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>Kills</div>
+          </div>
+          <div style={{background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px'}}>
+            <div style={{fontSize: '2rem', fontWeight: 900, color: '#ef4444', marginBottom: '0.5rem'}}>{user.cs2_stats?.total_deaths || 0}</div>
+            <div style={{color: '#9ca3af', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px'}}>Deaths</div>
           </div>
         </div>
 
