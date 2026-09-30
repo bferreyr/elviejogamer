@@ -6,6 +6,8 @@ import Gallery from './pages/Gallery'
 import Admin from './pages/Admin'
 import Profile from './pages/Profile'
 import AlbumView from './pages/AlbumView'
+import Matches from './pages/Matches'
+import MatchDetails from './pages/MatchDetails'
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/galeria" element={<Gallery />} />
         <Route path="/galeria/:id" element={<AlbumView />} />
+        <Route path="/partidas" element={<Matches />} />
+        <Route path="/partidas/:id" element={<MatchDetails />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/perfil" element={<Profile />} />
       </Routes>

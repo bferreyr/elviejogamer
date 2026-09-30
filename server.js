@@ -302,6 +302,53 @@ app.delete('/api/gallery/item/:id', isAdmin, async (req, res) => {
     }
 });
 
+// --- Matches API (CS2 Integration) ---
+
+// Plugin sends match data here
+app.post('/api/matches', express.json(), async (req, res) => {
+    // API Key protection so only the CS2 server can send data
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== (process.env.CS2_API_KEY || 'viejo_cs2_secret')) {
+        return res.status(401).json({ error: 'Unauthorized plugin key' });
+    }
+
+    try {
+        const { map_name, team_ct_score, team_t_score, duration, stats } = req.body;
+        const result = await pool.query(
+            'INSERT INTO matches (map_name, team_ct_score, team_t_score, duration, stats) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [map_name || 'Unknown', team_ct_score || 0, team_t_score || 0, duration || '00:00', JSON.stringify(stats || [])]
+        );
+        res.json({ success: true, match: result.rows[0] });
+    } catch (error) {
+        console.error('Error saving match:', error);
+        res.status(500).json({ error: 'Failed to save match data' });
+    }
+});
+
+app.get('/api/matches', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, map_name, team_ct_score, team_t_score, match_date, duration FROM matches ORDER BY match_date DESC LIMIT 50');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching matches:', error);
+        res.status(500).json({ error: 'Failed to fetch matches' });
+    }
+});
+
+app.get('/api/matches/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const result = await pool.query('SELECT * FROM matches WHERE id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Match not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error fetching match:', error);
+        res.status(500).json({ error: 'Failed to fetch match' });
+    }
+});
+
 // Dynamic Meta Tags for Albums
 app.get('/galeria/:id', async (req, res, next) => {
     // If it's a static asset request, let it fall through

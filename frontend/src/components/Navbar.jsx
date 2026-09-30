@@ -22,6 +22,7 @@ export default function Navbar() {
         <div className="nav-links">
           <Link to="/">Experiencia</Link>
           <Link to="/">Setup</Link>
+          <Link to="/partidas">Partidas</Link>
           <Link to="/galeria">Galería</Link>
         </div>
         <div className="nav-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
