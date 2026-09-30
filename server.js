@@ -141,14 +141,40 @@ app.get('/api/gallery', async (req, res) => {
     }
 });
 
-// API: Upload to gallery
-app.post('/api/upload', upload.single('media'), async (req, res) => {
-    const password = req.headers['authorization'];
-    if (password !== 'viejo123') { // Simple hardcoded password
-        if (req.file) fs.unlinkSync(req.file.path);
-        return res.status(401).json({ error: 'Unauthorized' });
+// --- Admin Middleware ---
+const isAdmin = (req, res, next) => {
+    if (req.isAuthenticated() && req.user.is_admin) {
+        return next();
     }
+    return res.status(403).json({ error: 'Acceso denegado: Se requieren permisos de administrador' });
+};
 
+// --- User Management API ---
+app.get('/api/users', isAdmin, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, steam_id, display_name, avatar_url, is_admin FROM users ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+app.put('/api/users/:id/admin', isAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { is_admin } = req.body;
+        
+        await pool.query('UPDATE users SET is_admin = $1 WHERE id = $2', [is_admin, id]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update user role' });
+    }
+});
+
+// API: Upload to gallery
+app.post('/api/upload', isAdmin, upload.single('media'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -157,7 +183,7 @@ app.post('/api/upload', upload.single('media'), async (req, res) => {
         const filename = req.file.filename;
         const type = req.file.mimetype.startsWith('video') ? 'video' : 'image';
         const url = `assets/gallery/${filename}`;
-        const uploaderSteamId = req.isAuthenticated() ? req.user.steam_id : null;
+        const uploaderSteamId = req.user.steam_id;
 
         const result = await pool.query(
             'INSERT INTO gallery_media (filename, type, url, uploader_steam_id) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -172,12 +198,7 @@ app.post('/api/upload', upload.single('media'), async (req, res) => {
 });
 
 // API: Delete from gallery
-app.delete('/api/gallery/:id', async (req, res) => {
-    const password = req.headers['authorization'];
-    if (password !== 'viejo123') {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
+app.delete('/api/gallery/:id', isAdmin, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         
