@@ -97,7 +97,7 @@ app.get('/auth/steam', passport.authenticate('steam', { failureRedirect: '/' }),
 });
 
 app.get('/auth/steam/return', passport.authenticate('steam', { failureRedirect: '/' }), (req, res) => {
-    res.redirect('/perfil.html');
+    res.redirect('/perfil');
 });
 
 app.get('/auth/logout', (req, res) => {

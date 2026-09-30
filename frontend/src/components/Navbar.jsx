@@ -32,7 +32,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <a href="/auth/steam" className="secondary-btn" style={{ padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.9rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <User size={18} /> Iniciar Sesión
+              <User size={18} /> Entrar / Registrarse
             </a>
           )}
           <a href="https://wa.me/5493425900075" className="cta-btn" target="_blank" rel="noreferrer">
