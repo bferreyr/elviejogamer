@@ -4,7 +4,8 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "build": "npm --prefix frontend install && npm --prefix frontend run build"
   },
   "repository": {
     "type": "git",
