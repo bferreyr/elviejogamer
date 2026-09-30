@@ -302,6 +302,41 @@ app.delete('/api/gallery/item/:id', isAdmin, async (req, res) => {
     }
 });
 
+// Dynamic Meta Tags for Albums
+app.get('/galeria/:id', async (req, res, next) => {
+    // If it's a static asset request, let it fall through
+    if (req.params.id.includes('.')) return next();
+    
+    try {
+        const albumId = parseInt(req.params.id);
+        if (isNaN(albumId)) return next();
+
+        const result = await pool.query(`
+            SELECT a.title, 
+            (SELECT url FROM gallery_media m WHERE m.album_id = a.id AND m.type = 'image' LIMIT 1) as cover_url
+            FROM gallery_albums a WHERE a.id = $1
+        `, [albumId]);
+        
+        let html = fs.readFileSync(path.join(frontendDistPath, 'index.html'), 'utf8');
+
+        if (result.rows.length > 0) {
+            const album = result.rows[0];
+            const title = `El Viejo Gamer | ${album.title}`;
+            const coverUrl = album.cover_url ? `https://elviejogamer.ngamers.net/${album.cover_url}` : 'https://elviejogamer.ngamers.net/assets/hero_bg.jpg';
+            
+            html = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`);
+            html = html.replace(/<meta property="og:title" content="[^"]*"/g, `<meta property="og:title" content="${title}"`);
+            html = html.replace(/<meta property="twitter:title" content="[^"]*"/g, `<meta property="twitter:title" content="${title}"`);
+            html = html.replace(/<meta property="og:image" content="[^"]*"/g, `<meta property="og:image" content="${coverUrl}"`);
+            html = html.replace(/<meta property="twitter:image" content="[^"]*"/g, `<meta property="twitter:image" content="${coverUrl}"`);
+        }
+        res.send(html);
+    } catch (err) {
+        console.error('Error dynamic meta:', err);
+        res.sendFile(path.join(frontendDistPath, 'index.html'));
+    }
+});
+
 // React Router fallback (MUST BE THE LAST ROUTE)
 app.get(/.*$/, (req, res) => {
     res.sendFile(path.join(frontendDistPath, 'index.html'));
