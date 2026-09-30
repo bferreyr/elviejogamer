@@ -23,7 +23,13 @@ const pool = new Pool({
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+
+const frontendDistPath = path.join(__dirname, 'frontend', 'dist');
+app.use(express.static(frontendDistPath));
+
+// Serve assets directory explicitly
+const assetsPath = path.join(__dirname, 'assets');
+app.use('/assets', express.static(assetsPath));
 
 // Session setup
 app.use(session({
@@ -196,6 +202,11 @@ app.delete('/api/gallery/:id', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete media' });
     }
+});
+
+// React Router fallback (MUST BE THE LAST ROUTE)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
