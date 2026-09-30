@@ -3,7 +3,7 @@ export default function Footer() {
     <footer>
       <div className="footer-content">
         <div className="footer-logo">
-          <img src="/assets/logo.jpg" alt="El Viejo Gamer" />
+          <img src="/assets/logo.png" alt="El Viejo Gamer" />
           <span>EL VIEJO GAMER</span>
         </div>
         <div className="footer-social">

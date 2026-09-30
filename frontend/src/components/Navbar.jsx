@@ -16,7 +16,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="logo" style={{textDecoration: 'none'}}>
-          <img src="/assets/logo.jpg" alt="El Viejo Gamer Logo" />
+          <img src="/assets/logo.png" alt="El Viejo Gamer Logo" />
           <span>EL VIEJO <strong>GAMER</strong></span>
         </Link>
         <div className="nav-links">

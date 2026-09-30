@@ -180,7 +180,7 @@ export default function Home() {
           </div>
           <div className="booking-image">
             <div className="glow-orb"></div>
-            <img src="/assets/logo.jpg" alt="Logo El Viejo Gamer" className="floating-logo" />
+            <img src="/assets/logo.png" alt="Logo El Viejo Gamer" className="floating-logo" />
           </div>
         </div>
       </section>
