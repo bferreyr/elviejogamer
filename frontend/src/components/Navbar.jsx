@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Gamepad2, MessageCircle, User } from 'lucide-react';
+import { MessageCircle, User, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Navbar() {
@@ -26,10 +26,17 @@ export default function Navbar() {
         </div>
         <div className="nav-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           {user ? (
-            <Link to="/perfil" className="secondary-btn" style={{ padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.9rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--primary)', color: '#000', borderColor: 'var(--primary)' }}>
-              <img src={user.avatar_url} style={{ width: '20px', height: '20px', borderRadius: '50%' }} alt="Avatar" />
-              Mi Perfil
-            </Link>
+            <>
+              {user.is_admin && (
+                <Link to="/admin" className="secondary-btn" style={{ padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.9rem', textDecoration: 'none', border: '1px solid rgba(74,222,128,0.4)', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
+                  <Shield size={16} /> Panel Admin
+                </Link>
+              )}
+              <Link to="/perfil" className="secondary-btn" style={{ padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.9rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--primary)', color: '#000', borderColor: 'var(--primary)' }}>
+                <img src={user.avatar_url} style={{ width: '20px', height: '20px', borderRadius: '50%' }} alt="Avatar" />
+                Mi Perfil
+              </Link>
+            </>
           ) : (
             <a href="/auth/steam" className="secondary-btn" style={{ padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.9rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <User size={18} /> Entrar / Registrarse
