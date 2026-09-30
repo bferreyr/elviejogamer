@@ -75,6 +75,40 @@ app.post('/api/upload', upload.single('media'), (req, res) => {
     }
 });
 
+// API: Delete from gallery
+app.delete('/api/gallery/:id', (req, res) => {
+    const password = req.headers['authorization'];
+    if (password !== 'viejo123') {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const id = parseInt(req.params.id);
+        let gallery = JSON.parse(fs.readFileSync(galleryJsonPath, 'utf8'));
+        
+        const itemIndex = gallery.findIndex(item => item.id === id);
+        if (itemIndex === -1) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        const item = gallery[itemIndex];
+        
+        // Delete file
+        const filePath = path.join(__dirname, item.url);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        // Remove from array and save
+        gallery.splice(itemIndex, 1);
+        fs.writeFileSync(galleryJsonPath, JSON.stringify(gallery, null, 2));
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete media' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`El Viejo Gamer Server running on http://localhost:${PORT}`);
 });
