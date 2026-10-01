@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import MapLogo from '../components/MapLogo';
 
 export default function Profile() {
   const { steam_id } = useParams();
@@ -242,9 +243,7 @@ export default function Profile() {
                           {rm.kills} / {rm.deaths} / {rm.assists}
                         </td>
                         <td style={{padding: '1rem'}}>
-                          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                            <span style={{fontWeight: 'bold', fontSize: '0.9rem', color: '#fff'}}>{rm.map_name}</span>
-                          </div>
+                          <MapLogo mapName={rm.map_name} />
                         </td>
                         <td style={{padding: '1rem', textAlign: 'right'}}>
                           <Link to={`/partidas/${rm.id}`} style={{color: '#9ca3af', textDecoration: 'none', fontSize: '0.85rem', background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.8rem', borderRadius: '4px'}}>Ver &rsaquo;</Link>

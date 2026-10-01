@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, PlaySquare } from 'lucide-react';
+import MapLogo from '../components/MapLogo';
 
 export default function MatchDetails() {
   const { id } = useParams();
@@ -211,8 +212,8 @@ export default function MatchDetails() {
             <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.3)', padding: '0.2rem 0.8rem', borderRadius: '20px', color: '#f97316', fontSize: '0.8rem', fontWeight: 'bold'}}>
               <PlaySquare size={14} /> Match Oficial
             </div>
-            <div style={{display: 'flex', gap: '1rem', color: '#fff', fontWeight: 'bold'}}>
-              <span>{match.map_name.toUpperCase()}</span>
+            <div style={{display: 'flex', gap: '1rem', color: '#fff', fontWeight: 'bold', alignItems: 'center'}}>
+              <MapLogo mapName={match.map_name} showName={true} />
               <span style={{color: '#6b7280'}}>•</span>
               <span>{new Date(match.match_date).toLocaleDateString('es-AR')}</span>
             </div>

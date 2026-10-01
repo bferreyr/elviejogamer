@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swords, Clock, Calendar, Trophy } from 'lucide-react';
+import MapLogo from '../components/MapLogo';
 
 export default function Matches() {
   const [matches, setMatches] = useState([]);
@@ -62,9 +63,9 @@ export default function Matches() {
                   onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'}
                   >
                     <div className="match-list-item-flex">
-                      <div style={{width: '100px', textAlign: 'center'}}>
+                      <div style={{width: '150px', textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                         <div style={{fontSize: '0.8rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem'}}>Mapa</div>
-                        <div style={{fontWeight: 'bold', fontSize: '1.2rem'}}>{match.map_name}</div>
+                        <MapLogo mapName={match.map_name} />
                       </div>
                       
                       <div style={{display: 'flex', alignItems: 'center', gap: '1.5rem'}}>
