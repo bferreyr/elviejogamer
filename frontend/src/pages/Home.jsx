@@ -1,6 +1,20 @@
 import { ChevronRight, Monitor, Users, Zap, Cast, Cpu, MonitorPlay, Keyboard, Headset, Armchair, Wifi, Server, Cctv, MessageCircle } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function Home() {
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.substring(1);
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, []);
   return (
     <>
       {/* Hero Section */}

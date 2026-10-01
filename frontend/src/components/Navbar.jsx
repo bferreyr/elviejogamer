@@ -51,8 +51,20 @@ export default function Navbar() {
           <span>EL VIEJO <strong>GAMER</strong></span>
         </Link>
         <div className="nav-links">
-          <Link to="/">Experiencia</Link>
-          <Link to="/">Setup</Link>
+          <Link to="/#experiencia" onClick={(e) => {
+            if (window.location.pathname === '/') {
+              e.preventDefault();
+              document.getElementById('experiencia')?.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(null, '', '/#experiencia');
+            }
+          }}>Experiencia</Link>
+          <Link to="/#setup" onClick={(e) => {
+            if (window.location.pathname === '/') {
+              e.preventDefault();
+              document.getElementById('setup')?.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(null, '', '/#setup');
+            }
+          }}>Setup</Link>
           <Link to="/jugadores">Jugadores</Link>
           <Link to="/partidas">Partidas</Link>
           <Link to="/galeria">Galería</Link>
