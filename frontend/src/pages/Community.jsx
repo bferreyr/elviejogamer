@@ -16,7 +16,11 @@ export default function Community() {
     fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
       .then(res => res.json())
       .then(data => {
-        setUsers(data);
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          setUsers([]);
+        }
         setLoading(false);
       })
       .catch(err => {

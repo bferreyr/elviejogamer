@@ -284,6 +284,23 @@ async function calculateUserStats(steam_id) {
     };
 }
 
+// API: Search users
+app.get('/api/users/search', async (req, res) => {
+    const query = req.query.q || '';
+    try {
+        const result = await pool.query(`
+            SELECT id, steam_id, display_name, avatar_url 
+            FROM users 
+            WHERE display_name ILIKE $1 
+            ORDER BY display_name ASC 
+            LIMIT 50
+        `, [`%${query}%`]);
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({error: 'Error searching users'});
+    }
+});
+
 // API: Get specific user profile
 app.get('/api/users/:steam_id', async (req, res) => {
     try {
@@ -315,23 +332,6 @@ app.get('/api/users/:steam_id', async (req, res) => {
     } catch (error) {
         console.error('Error fetching user profile:', error);
         res.status(500).json({error: 'Error de servidor'});
-    }
-});
-
-// API: Search users
-app.get('/api/users/search', async (req, res) => {
-    const query = req.query.q || '';
-    try {
-        const result = await pool.query(`
-            SELECT id, steam_id, display_name, avatar_url 
-            FROM users 
-            WHERE display_name ILIKE $1 
-            ORDER BY display_name ASC 
-            LIMIT 50
-        `, [`%${query}%`]);
-        res.json(result.rows);
-    } catch (error) {
-        res.status(500).json({error: 'Error searching users'});
     }
 });
 
