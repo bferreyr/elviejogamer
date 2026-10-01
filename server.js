@@ -287,7 +287,7 @@ async function calculateUserStats(steam_id) {
 // API: Get specific user profile
 app.get('/api/users/:steam_id', async (req, res) => {
     try {
-        const userResult = await pool.query('SELECT id, steam_id, display_name, avatar_url, profile_url FROM users WHERE steam_id = $1', [req.params.steam_id]);
+        const userResult = await pool.query('SELECT id, steam_id, display_name, avatar_url, profile_url, is_admin FROM users WHERE steam_id = $1', [req.params.steam_id]);
         if (userResult.rows.length === 0) return res.status(404).json({error: 'Usuario no encontrado'});
         
         const userObj = userResult.rows[0];

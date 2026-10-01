@@ -81,7 +81,13 @@ export default function Profile() {
 
           <div style={{background: '#18181b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem'}}>
             <div style={{color: '#9ca3af', fontSize: '0.85rem', marginBottom: '1rem', textTransform: 'uppercase', fontWeight: 'bold'}}>Información</div>
-            <div style={{fontSize: '0.9rem', marginBottom: '0.5rem'}}>Miembro de El Viejo Gamer</div>
+            {user.is_admin ? (
+              <div style={{fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 'bold', color: '#facc15', display: 'flex', alignItems: 'center', gap: '0.4rem'}}>
+                <span style={{fontSize: '1.1rem'}}>⭐</span> STAFF de EL VIEJO GAMER
+              </div>
+            ) : (
+              <div style={{fontSize: '0.9rem', marginBottom: '0.5rem'}}>Miembro de El Viejo Gamer</div>
+            )}
             <div style={{color: '#f97316', fontSize: '0.9rem', marginBottom: '1rem'}}>{user.steam_id} 📋</div>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}><span style={{fontSize: '1.2rem'}}>🇦🇷</span> Argentina</div>
           </div>

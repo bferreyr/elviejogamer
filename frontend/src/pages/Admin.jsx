@@ -51,7 +51,7 @@ export default function Admin() {
 
   const loadUsers = async () => {
     try {
-      const res = await fetch('/api/users');
+      const res = await fetch(`/api/users?t=${new Date().getTime()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
