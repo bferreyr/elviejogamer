@@ -13,7 +13,7 @@ export default function Community() {
 
   const fetchUsers = (q = '') => {
     setLoading(true);
-    fetch(`/api/users?q=${encodeURIComponent(q)}`)
+    fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
       .then(res => res.json())
       .then(data => {
         setUsers(data);

@@ -319,7 +319,7 @@ app.get('/api/users/:steam_id', async (req, res) => {
 });
 
 // API: Search users
-app.get('/api/users', async (req, res) => {
+app.get('/api/users/search', async (req, res) => {
     const query = req.query.q || '';
     try {
         const result = await pool.query(`
