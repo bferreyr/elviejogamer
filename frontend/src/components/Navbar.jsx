@@ -46,7 +46,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <Link to="/" className="logo" style={{textDecoration: 'none'}}>
+        <Link to="/" className="logo" style={{textDecoration: 'none'}} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img src="/assets/logo.png" alt="El Viejo Gamer Logo" />
           <span>EL VIEJO <strong>GAMER</strong></span>
         </Link>
