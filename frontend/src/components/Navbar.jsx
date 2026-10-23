@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageCircle, User, Shield, Bell, ChevronDown, Trophy, Menu, X } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -75,7 +76,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar">
+    <>
+      <nav className="navbar">
       <div className="nav-container">
         <Link 
           to="/" 
@@ -211,108 +213,113 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+    </nav>
 
-      {/* Mobile Backdrop */}
-      {mobileMenuOpen && (
-        <div className="mobile-menu-backdrop" onClick={closeMobile} />
-      )}
+    {/* Render Mobile Backdrop & Drawer directly on document.body via Portal */}
+    {typeof document !== 'undefined' && createPortal(
+      <>
+        {mobileMenuOpen && (
+          <div className="mobile-menu-backdrop" onClick={closeMobile} />
+        )}
 
-      {/* Mobile Drawer */}
-      <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
-        <div className="mobile-drawer-header">
-          <div className="mobile-drawer-logo">
-            <img src="/assets/logo.png" alt="Logo" />
-            <span>EL VIEJO <strong>GAMER</strong></span>
+        <div className={`mobile-nav-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-drawer-header">
+            <div className="mobile-drawer-logo">
+              <img src="/assets/logo.png" alt="Logo" />
+              <span>EL VIEJO <strong>GAMER</strong></span>
+            </div>
+            <button className="mobile-drawer-close" onClick={closeMobile} aria-label="Cerrar">
+              <X size={20} />
+            </button>
           </div>
-          <button className="mobile-drawer-close" onClick={closeMobile} aria-label="Cerrar">
-            <X size={20} />
-          </button>
-        </div>
 
-        {/* User Card in Mobile Drawer */}
-        <div className="mobile-drawer-user">
-          {user ? (
-            <div className="mobile-user-card">
-              <img src={user.avatar_url} alt="Avatar" className="mobile-user-avatar" />
-              <div className="mobile-user-info">
-                <span className="mobile-user-name">{user.display_name}</span>
-                <div className="mobile-user-actions">
-                  <Link to="/perfil" onClick={closeMobile} className="mobile-user-link">
-                    Ver Perfil &rarr;
-                  </Link>
-                  {user.is_admin && (
-                    <Link to="/admin" onClick={closeMobile} className="mobile-admin-link">
-                      <Shield size={12} /> Admin
+          {/* User Card in Mobile Drawer */}
+          <div className="mobile-drawer-user">
+            {user ? (
+              <div className="mobile-user-card">
+                <img src={user.avatar_url} alt="Avatar" className="mobile-user-avatar" />
+                <div className="mobile-user-info">
+                  <span className="mobile-user-name">{user.display_name}</span>
+                  <div className="mobile-user-actions">
+                    <Link to="/perfil" onClick={closeMobile} className="mobile-user-link">
+                      Ver Perfil &rarr;
                     </Link>
-                  )}
+                    {user.is_admin && (
+                      <Link to="/admin" onClick={closeMobile} className="mobile-admin-link">
+                        <Shield size={12} /> Admin
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <a href="/auth/steam" className="mobile-steam-login-btn">
-              <User size={18} /> Iniciar Sesión con Steam
-            </a>
-          )}
-        </div>
-
-        {/* Navigation Links in Mobile Drawer */}
-        <div className="mobile-drawer-links">
-          <Link to="/#experiencia" onClick={(e) => handleScrollSection(e, 'experiencia')}>
-            Experiencia
-          </Link>
-          <Link to="/#setup" onClick={(e) => handleScrollSection(e, 'setup')}>
-            Setup
-          </Link>
-
-          {/* Tournament Section in Mobile Drawer */}
-          <div className="mobile-drawer-group">
-            <div 
-              className="mobile-group-header"
-              onClick={() => setMobileTournamentOpen(!mobileTournamentOpen)}
-            >
-              <span className="group-title">
-                <Trophy size={16} color="var(--primary)" /> TORNEO
-              </span>
-              <ChevronDown size={15} className={`group-chevron ${mobileTournamentOpen ? 'rotated' : ''}`} />
-            </div>
-            {mobileTournamentOpen && (
-              <div className="mobile-group-items">
-                <Link 
-                  to="/torneo/inscripcion" 
-                  className="mobile-sublink highlight"
-                  onClick={closeMobile}
-                >
-                  <div className="sublink-badge">COPA VIEJO GAMER</div>
-                  <span className="sublink-title">Inscripción Oficial &rarr;</span>
-                </Link>
-              </div>
+            ) : (
+              <a href="/auth/steam" className="mobile-steam-login-btn">
+                <User size={18} /> Iniciar Sesión con Steam
+              </a>
             )}
           </div>
 
-          <Link to="/partidas" onClick={closeMobile}>
-            Partidas
-          </Link>
-          <Link to="/jugadores" onClick={closeMobile}>
-            Jugadores
-          </Link>
-          <Link to="/galeria" onClick={closeMobile}>
-            Galería
-          </Link>
-        </div>
+          {/* Navigation Links in Mobile Drawer */}
+          <div className="mobile-drawer-links">
+            <Link to="/#experiencia" onClick={(e) => handleScrollSection(e, 'experiencia')}>
+              Experiencia
+            </Link>
+            <Link to="/#setup" onClick={(e) => handleScrollSection(e, 'setup')}>
+              Setup
+            </Link>
 
-        {/* Mobile WhatsApp CTA Button */}
-        <div className="mobile-drawer-footer">
-          <a 
-            href="https://wa.me/5493425900075" 
-            className="mobile-whatsapp-btn" 
-            target="_blank" 
-            rel="noreferrer"
-          >
-            <MessageCircle size={18} />
-            <span>Reservar por WhatsApp</span>
-          </a>
+            {/* Tournament Section in Mobile Drawer */}
+            <div className="mobile-drawer-group">
+              <div 
+                className="mobile-group-header"
+                onClick={() => setMobileTournamentOpen(!mobileTournamentOpen)}
+              >
+                <span className="group-title">
+                  <Trophy size={16} color="var(--primary)" /> TORNEO
+                </span>
+                <ChevronDown size={15} className={`group-chevron ${mobileTournamentOpen ? 'rotated' : ''}`} />
+              </div>
+              {mobileTournamentOpen && (
+                <div className="mobile-group-items">
+                  <Link 
+                    to="/torneo/inscripcion" 
+                    className="mobile-sublink highlight"
+                    onClick={closeMobile}
+                  >
+                    <div className="sublink-badge">COPA VIEJO GAMER</div>
+                    <span className="sublink-title">Inscripción Oficial &rarr;</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link to="/partidas" onClick={closeMobile}>
+              Partidas
+            </Link>
+            <Link to="/jugadores" onClick={closeMobile}>
+              Jugadores
+            </Link>
+            <Link to="/galeria" onClick={closeMobile}>
+              Galería
+            </Link>
+          </div>
+
+          {/* Mobile WhatsApp CTA Button */}
+          <div className="mobile-drawer-footer">
+            <a 
+              href="https://wa.me/5493425900075" 
+              className="mobile-whatsapp-btn" 
+              target="_blank" 
+              rel="noreferrer"
+            >
+              <MessageCircle size={18} />
+              <span>Reservar por WhatsApp</span>
+            </a>
+          </div>
         </div>
-      </div>
-    </nav>
+      </>,
+      document.body
+    )}
+  </>
   );
 }
