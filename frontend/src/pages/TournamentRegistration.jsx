@@ -349,9 +349,9 @@ export default function TournamentRegistration() {
       {/* ========================================================
           MEGA BANNER: PREMIO $1.000.000 (GRADIENTE ANIMADO)
          ======================================================== */}
-      <div style={{
+      <div className="prize-pool-mega-card" style={{
         textAlign: 'center',
-        padding: '3rem 1.5rem',
+        padding: 'clamp(1.8rem, 5vw, 3rem) clamp(0.6rem, 3vw, 1.5rem)',
         background: 'linear-gradient(135deg, rgba(28, 12, 16, 0.95) 0%, rgba(14, 14, 18, 0.98) 50%, rgba(22, 12, 28, 0.95) 100%)',
         border: '2px solid rgba(245, 158, 11, 0.5)',
         borderRadius: '20px',
@@ -388,41 +388,46 @@ export default function TournamentRegistration() {
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '0.6rem',
+          gap: '0.5rem',
           background: 'rgba(245, 158, 11, 0.15)',
           border: '1px solid rgba(245, 158, 11, 0.5)',
           color: '#fbbf24',
-          padding: '0.45rem 1.4rem',
+          padding: '0.4rem 1.2rem',
           borderRadius: '999px',
-          fontSize: '0.85rem',
+          fontSize: 'clamp(0.72rem, 2vw, 0.85rem)',
           fontWeight: 900,
-          letterSpacing: '2px',
+          letterSpacing: '1.5px',
           textTransform: 'uppercase',
-          marginBottom: '0.8rem'
+          marginBottom: '0.6rem'
         }}>
-          <Sparkles size={16} /> POZO OFICIAL EN PREMIOS <Sparkles size={16} />
+          <Sparkles size={15} /> POZO OFICIAL EN PREMIOS <Sparkles size={15} />
         </div>
 
-        {/* Cifra Gigante con Gradiente Animado en Movimiento Continuo */}
-        <div className="prize-animated-gradient" style={{
-          fontSize: 'clamp(4.2rem, 12vw, 8rem)',
-          fontWeight: 950,
-          letterSpacing: '-2px',
-          lineHeight: 1,
-          margin: '0.2rem 0',
-          fontFamily: "'Outfit', sans-serif"
-        }}>
-          $1.000.000
+        {/* Cifra Gigante con Gradiente Animado en Movimiento Continuo (Adaptado a móviles) */}
+        <div style={{ width: '100%', overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
+          <div className="prize-animated-gradient" style={{
+            fontSize: 'clamp(2.4rem, 11.2vw, 6.8rem)',
+            fontWeight: 950,
+            letterSpacing: 'clamp(-1.5px, -0.2vw, -1px)',
+            lineHeight: 1.1,
+            margin: '0.1rem 0 0.3rem',
+            fontFamily: "'Outfit', sans-serif",
+            whiteSpace: 'nowrap',
+            maxWidth: '100%'
+          }}>
+            $1.000.000
+          </div>
         </div>
 
         <div style={{
-          fontSize: 'clamp(1.25rem, 3.8vw, 2.2rem)',
+          fontSize: 'clamp(0.95rem, 3.4vw, 1.85rem)',
           fontWeight: 900,
-          letterSpacing: '3px',
+          letterSpacing: 'clamp(1px, 0.3vw, 2.5px)',
           color: '#ffffff',
           textTransform: 'uppercase',
-          marginBottom: '0.6rem',
-          textShadow: '0 2px 15px rgba(0,0,0,0.9)'
+          marginBottom: '0.5rem',
+          textShadow: '0 2px 15px rgba(0,0,0,0.9)',
+          lineHeight: 1.3
         }}>
           UN MILLÓN DE PESOS EN PREMIOS
         </div>
