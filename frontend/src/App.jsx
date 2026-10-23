@@ -9,6 +9,7 @@ import AlbumView from './pages/AlbumView'
 import Matches from './pages/Matches'
 import MatchDetails from './pages/MatchDetails'
 import Community from './pages/Community'
+import TournamentRegistration from './pages/TournamentRegistration'
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path="/partidas" element={<Matches />} />
         <Route path="/partidas/:id" element={<MatchDetails />} />
         <Route path="/jugadores" element={<Community />} />
+        <Route path="/torneo/inscripcion" element={<TournamentRegistration />} />
+        <Route path="/inscripcion" element={<TournamentRegistration />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/perfil/:steam_id" element={<Profile />} />

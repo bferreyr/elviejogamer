@@ -1,12 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageCircle, User, Shield, Bell } from 'lucide-react';
+import { MessageCircle, User, Shield, Bell, ChevronDown, Trophy } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [tournamentDropdownOpen, setTournamentDropdownOpen] = useState(false);
   const notifRef = useRef(null);
+  const tournamentRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +29,9 @@ export default function Navbar() {
     const handleClickOutside = (event) => {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setShowNotifications(false);
+      }
+      if (tournamentRef.current && !tournamentRef.current.contains(event.target)) {
+        setTournamentDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -65,8 +70,40 @@ export default function Navbar() {
               window.history.pushState(null, '', '/#setup');
             }
           }}>Setup</Link>
-          <Link to="/jugadores">Jugadores</Link>
+
+          {/* Botón y Desplegable Torneo */}
+          <div 
+            className="nav-dropdown"
+            ref={tournamentRef}
+            onMouseEnter={() => setTournamentDropdownOpen(true)}
+            onMouseLeave={() => setTournamentDropdownOpen(false)}
+          >
+            <button
+              type="button"
+              className={`nav-dropdown-btn ${tournamentDropdownOpen ? 'active' : ''}`}
+              onClick={() => setTournamentDropdownOpen(prev => !prev)}
+              aria-expanded={tournamentDropdownOpen}
+              aria-haspopup="true"
+            >
+              <span>TORNEO</span>
+              <ChevronDown size={14} className={`dropdown-chevron ${tournamentDropdownOpen ? 'rotated' : ''}`} />
+            </button>
+            {tournamentDropdownOpen && (
+              <div className="nav-dropdown-menu">
+                <Link 
+                  to="/torneo/inscripcion" 
+                  className="nav-dropdown-item"
+                  onClick={() => setTournamentDropdownOpen(false)}
+                >
+                  <Trophy size={16} className="dropdown-item-icon" />
+                  <span className="dropdown-item-title">INSCRIPCION COPA VIEJO GAMER</span>
+                </Link>
+              </div>
+            )}
+          </div>
+
           <Link to="/partidas">Partidas</Link>
+          <Link to="/jugadores">Jugadores</Link>
           <Link to="/galeria">Galería</Link>
         </div>
         <div className="nav-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
