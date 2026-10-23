@@ -13,6 +13,10 @@ export default defineConfig({
       '/auth': {
         target: 'http://localhost:3003',
         changeOrigin: true
+      },
+      '/assets': {
+        target: 'http://localhost:3003',
+        changeOrigin: true
       }
     }
   }

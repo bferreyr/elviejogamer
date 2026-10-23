@@ -458,6 +458,309 @@ app.put('/api/users/:id/admin', isAdmin, async (req, res) => {
     }
 });
 
+// ==========================================
+// --- TOURNAMENT REGISTRATIONS API ---
+// ==========================================
+const tournamentUploadsPath = path.join(__dirname, 'assets', 'tournaments');
+if (!fs.existsSync(tournamentUploadsPath)) fs.mkdirSync(tournamentUploadsPath, { recursive: true });
+
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+const tournamentJsonFile = path.join(dataDir, 'tournament_registrations.json');
+
+const getLocalRegistrations = () => {
+    if (!fs.existsSync(tournamentJsonFile)) return [];
+    try {
+        return JSON.parse(fs.readFileSync(tournamentJsonFile, 'utf8'));
+    } catch (e) {
+        return [];
+    }
+};
+
+const saveLocalRegistrations = (list) => {
+    try {
+        fs.writeFileSync(tournamentJsonFile, JSON.stringify(list, null, 2), 'utf8');
+    } catch (e) {
+        console.error('Error saving local registrations:', e);
+    }
+};
+
+// Database table initialization for tournament
+const initTournamentDb = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tournament_registrations (
+                id SERIAL PRIMARY KEY,
+                team_name VARCHAR(255) NOT NULL,
+                team_tag VARCHAR(50) NOT NULL,
+                origin_city VARCHAR(255) NOT NULL,
+                instagram VARCHAR(255),
+                logo_url TEXT,
+                captain_name VARCHAR(255) NOT NULL,
+                captain_nick VARCHAR(255) NOT NULL,
+                captain_phone VARCHAR(100) NOT NULL,
+                captain_email VARCHAR(255),
+                captain_steam VARCHAR(500) NOT NULL,
+                captain_faceit VARCHAR(500) NOT NULL,
+                captain_discord VARCHAR(255),
+                roster JSONB NOT NULL,
+                has_substitutes VARCHAR(50) NOT NULL,
+                substitutes JSONB,
+                can_attend_lan VARCHAR(10) NOT NULL,
+                travel_from VARCHAR(255) NOT NULL,
+                payment_holder_name VARCHAR(255) NOT NULL,
+                payment_receipt_url TEXT NOT NULL,
+                payment_amount VARCHAR(50) DEFAULT 'AR$ 150.000',
+                payment_method VARCHAR(50) DEFAULT 'TRANSFERENCIA',
+                status VARCHAR(50) DEFAULT 'pendiente',
+                accepted_rules BOOLEAN DEFAULT false,
+                accepted_identity BOOLEAN DEFAULT false,
+                accepted_fairplay BOOLEAN DEFAULT false,
+                accepted_commitment BOOLEAN DEFAULT false,
+                accepted_data_public BOOLEAN DEFAULT false,
+                accepted_image_promo VARCHAR(50),
+                comments TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('Tournament database tables ready.');
+    } catch (err) {
+        console.warn('Note: PostgreSQL tournament_registrations table setup skipped or offline (JSON backup active):', err.message);
+    }
+};
+initTournamentDb();
+
+// Multer storage for tournament logo and payment receipt
+const tournamentStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, tournamentUploadsPath);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const prefix = file.fieldname === 'logo' ? 'logo' : 'comprobante';
+        cb(null, `${prefix}-${uniqueSuffix}${path.extname(file.originalname)}`);
+    }
+});
+
+const uploadTournament = multer({
+    storage: tournamentStorage,
+    limits: { fileSize: 15 * 1024 * 1024 }, // 15MB
+    fileFilter: (req, file, cb) => {
+        const allowedExts = ['.png', '.jpg', '.jpeg', '.pdf', '.webp'];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowedExts.includes(ext)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Formato de archivo no soportado. Se permiten PNG, JPG, JPEG o PDF.'));
+        }
+    }
+});
+
+// Public: Submit tournament registration
+app.post('/api/tournament/register', uploadTournament.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'receipt', maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const body = req.body;
+        const logoFile = req.files && req.files.logo ? req.files.logo[0] : null;
+        const receiptFile = req.files && req.files.receipt ? req.files.receipt[0] : null;
+
+        if (!receiptFile) {
+            return res.status(400).json({ error: 'El comprobante de pago es obligatorio.' });
+        }
+
+        const logo_url = logoFile ? `/assets/tournaments/${logoFile.filename}` : null;
+        const payment_receipt_url = `/assets/tournaments/${receiptFile.filename}`;
+
+        let roster = [];
+        try {
+            roster = typeof body.roster === 'string' ? JSON.parse(body.roster) : body.roster || [];
+        } catch (e) {
+            roster = [];
+        }
+
+        let substitutes = [];
+        try {
+            substitutes = typeof body.substitutes === 'string' ? JSON.parse(body.substitutes) : body.substitutes || [];
+        } catch (e) {
+            substitutes = [];
+        }
+
+        const registrationData = {
+            team_name: body.team_name || '',
+            team_tag: body.team_tag || '',
+            origin_city: body.origin_city || '',
+            instagram: body.instagram || null,
+            logo_url,
+            captain_name: body.captain_name || '',
+            captain_nick: body.captain_nick || '',
+            captain_phone: body.captain_phone || '',
+            captain_email: body.captain_email || null,
+            captain_steam: body.captain_steam || '',
+            captain_faceit: body.captain_faceit || '',
+            captain_discord: body.captain_discord || null,
+            roster,
+            has_substitutes: body.has_substitutes || 'No',
+            substitutes,
+            can_attend_lan: body.can_attend_lan || 'Sí',
+            travel_from: body.travel_from || '',
+            payment_holder_name: body.payment_holder_name || '',
+            payment_receipt_url,
+            payment_amount: 'AR$ 150.000',
+            payment_method: 'TRANSFERENCIA',
+            status: 'pendiente',
+            accepted_rules: body.accepted_rules === 'true' || body.accepted_rules === true,
+            accepted_identity: body.accepted_identity === 'true' || body.accepted_identity === true,
+            accepted_fairplay: body.accepted_fairplay === 'true' || body.accepted_fairplay === true,
+            accepted_commitment: body.accepted_commitment === 'true' || body.accepted_commitment === true,
+            accepted_data_public: body.accepted_data_public === 'true' || body.accepted_data_public === true,
+            accepted_image_promo: body.accepted_image_promo || 'Autorizo',
+            comments: body.comments || null,
+            created_at: new Date().toISOString()
+        };
+
+        let insertedId = null;
+        try {
+            const query = `
+                INSERT INTO tournament_registrations (
+                    team_name, team_tag, origin_city, instagram, logo_url,
+                    captain_name, captain_nick, captain_phone, captain_email, captain_steam, captain_faceit, captain_discord,
+                    roster, has_substitutes, substitutes, can_attend_lan, travel_from,
+                    payment_holder_name, payment_receipt_url, payment_amount, payment_method, status,
+                    accepted_rules, accepted_identity, accepted_fairplay, accepted_commitment, accepted_data_public, accepted_image_promo,
+                    comments
+                ) VALUES (
+                    $1, $2, $3, $4, $5,
+                    $6, $7, $8, $9, $10, $11, $12,
+                    $13, $14, $15, $16, $17,
+                    $18, $19, $20, $21, $22,
+                    $23, $24, $25, $26, $27, $28,
+                    $29
+                ) RETURNING id;
+            `;
+            const values = [
+                registrationData.team_name,
+                registrationData.team_tag,
+                registrationData.origin_city,
+                registrationData.instagram,
+                registrationData.logo_url,
+                registrationData.captain_name,
+                registrationData.captain_nick,
+                registrationData.captain_phone,
+                registrationData.captain_email,
+                registrationData.captain_steam,
+                registrationData.captain_faceit,
+                registrationData.captain_discord,
+                JSON.stringify(registrationData.roster),
+                registrationData.has_substitutes,
+                JSON.stringify(registrationData.substitutes),
+                registrationData.can_attend_lan,
+                registrationData.travel_from,
+                registrationData.payment_holder_name,
+                registrationData.payment_receipt_url,
+                registrationData.payment_amount,
+                registrationData.payment_method,
+                registrationData.status,
+                registrationData.accepted_rules,
+                registrationData.accepted_identity,
+                registrationData.accepted_fairplay,
+                registrationData.accepted_commitment,
+                registrationData.accepted_data_public,
+                registrationData.accepted_image_promo,
+                registrationData.comments
+            ];
+            const result = await pool.query(query, values);
+            insertedId = result.rows[0].id;
+            registrationData.id = insertedId;
+        } catch (dbErr) {
+            console.warn('DB Insert failed, saving into fallback JSON store:', dbErr.message);
+            insertedId = Date.now();
+            registrationData.id = insertedId;
+        }
+
+        // Always sync with local backup JSON
+        const localList = getLocalRegistrations();
+        localList.unshift(registrationData);
+        saveLocalRegistrations(localList);
+
+        res.json({
+            success: true,
+            id: insertedId,
+            message: 'Inscripción registrada con éxito'
+        });
+    } catch (err) {
+        console.error('Error registering tournament team:', err);
+        res.status(500).json({ error: 'Ocurrió un error al procesar la inscripción.' });
+    }
+});
+
+// Admin: Get all registrations
+app.get('/api/admin/tournament/registrations', isAdmin, async (req, res) => {
+    try {
+        let rows = [];
+        try {
+            const result = await pool.query('SELECT * FROM tournament_registrations ORDER BY created_at DESC');
+            rows = result.rows;
+        } catch (dbErr) {
+            console.warn('DB select failed, reading from local JSON backup:', dbErr.message);
+            rows = getLocalRegistrations();
+        }
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching tournament registrations:', err);
+        res.status(500).json({ error: 'Error al obtener inscripciones.' });
+    }
+});
+
+// Admin: Update registration status (e.g., 'confirmado', 'pendiente', 'rechazado')
+app.put('/api/admin/tournament/registrations/:id/status', isAdmin, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { status } = req.body;
+        
+        try {
+            await pool.query('UPDATE tournament_registrations SET status = $1 WHERE id = $2', [status, id]);
+        } catch (dbErr) {
+            console.warn('DB update failed, updating local JSON backup:', dbErr.message);
+        }
+
+        const localList = getLocalRegistrations();
+        const item = localList.find(r => String(r.id) === String(id));
+        if (item) {
+            item.status = status;
+            saveLocalRegistrations(localList);
+        }
+
+        res.json({ success: true, status });
+    } catch (err) {
+        console.error('Error updating status:', err);
+        res.status(500).json({ error: 'Error al actualizar estado.' });
+    }
+});
+
+// Admin: Delete registration
+app.delete('/api/admin/tournament/registrations/:id', isAdmin, async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        try {
+            await pool.query('DELETE FROM tournament_registrations WHERE id = $1', [id]);
+        } catch (dbErr) {
+            console.warn('DB delete failed, deleting from local JSON backup:', dbErr.message);
+        }
+
+        const localList = getLocalRegistrations();
+        const filtered = localList.filter(r => String(r.id) !== String(id));
+        saveLocalRegistrations(filtered);
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error deleting registration:', err);
+        res.status(500).json({ error: 'Error al eliminar inscripción.' });
+    }
+});
+
 // --- Album and Gallery API ---
 
 app.get('/api/albums', async (req, res) => {
