@@ -1234,7 +1234,7 @@ export default function Admin() {
                 <div style={{fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.8rem'}}>
                   SECCIÓN 4 – DISPONIBILIDAD Y FASE PRESENCIAL
                 </div>
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem'}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem'}}>
                   <div>
                     <span style={{fontSize: '0.75rem', color: '#9ca3af', display: 'block'}}>21. Asistencia Presencial a Santa Fe Capital</span>
                     <strong style={{color: selectedReg.can_attend_lan === 'Sí' ? '#22c55e' : '#ef4444', fontSize: '1rem'}}>
@@ -1244,6 +1244,11 @@ export default function Admin() {
                   <div>
                     <span style={{fontSize: '0.75rem', color: '#9ca3af', display: 'block'}}>22. Localidad de partida para viajar</span>
                     <strong style={{color: '#fff', fontSize: '1rem'}}>{selectedReg.travel_from || '-'}</strong>
+                  </div>
+                  <div>
+                    <span style={{fontSize: '0.75rem', color: '#9ca3af', display: 'block'}}>Sede Oficial de la Final</span>
+                    <strong style={{color: '#fff', fontSize: '0.9rem'}}>Círculo Italiano, Santa Fe</strong>
+                    <div style={{fontSize: '0.75rem', color: '#9ca3af'}}>Hipólito Irigoyen 2451</div>
                   </div>
                 </div>
               </div>

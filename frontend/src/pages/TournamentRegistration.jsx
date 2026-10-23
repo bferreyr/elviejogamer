@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { 
   Trophy, Users, Shield, Calendar, Sparkles, CheckCircle2, Swords, 
   AlertTriangle, CreditCard, MapPin, Clock, Upload, FileText, Check, 
-  Copy, ArrowRight, UserCheck, MessageCircle, AlertCircle, ChevronDown, CheckSquare, Square
+  Copy, ArrowRight, UserCheck, MessageCircle, AlertCircle, ChevronDown, CheckSquare, Square,
+  ExternalLink
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -586,6 +587,47 @@ export default function TournamentRegistration() {
               <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff' }}>21 / 02 / 2027</div>
             </div>
           </div>
+        </div>
+
+        {/* Banner de Sede Presencial en Hero */}
+        <div style={{
+          marginTop: '1.5rem',
+          background: 'rgba(0, 0, 0, 0.45)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '10px',
+          padding: '0.85rem 1.2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          fontSize: '0.9rem'
+        }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary)', fontWeight: 800 }}>
+            <MapPin size={16} /> SEDE PRESENCIAL:
+          </span>
+          <span style={{ color: '#fff', fontWeight: 700 }}>
+            Círculo Italiano (Santa Fe)
+          </span>
+          <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>
+            Hipólito Irigoyen 2451
+          </span>
+          <a
+            href="https://www.google.com/maps/place/Restaurante+C%C3%ADrculo+Italiano/@-31.6426088,-60.7039608,17z/data=!3m1!4b1!4m6!3m5!1s0x95b5a9bc780a3999:0xeb57be25b6b32fc0!8m2!3d-31.6426088!4d-60.7039608!16s%2Fg%2F1tgmxg53!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MTAyMC4wIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: '#60a5fa', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: 700 }}
+          >
+            Ver Mapa <ExternalLink size={13} />
+          </a>
+          <a
+            href="https://www.instagram.com/circuloitalianosf/"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: '#f472b6', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: 700 }}
+          >
+            Instagram <ExternalLink size={13} />
+          </a>
         </div>
       </div>
 
@@ -1187,6 +1229,89 @@ export default function TournamentRegistration() {
             <div>
               <h2 style={sectionTitleStyle}>DISPONIBILIDAD Y FASE PRESENCIAL</h2>
               <p style={sectionSubtitleStyle}>Compromiso de asistencia a la fase final en Santa Fe Capital</p>
+            </div>
+          </div>
+
+          {/* TARJETA INFORMATIVA DE LA SEDE PRESENCIAL */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.08) 0%, rgba(18, 18, 22, 0.95) 100%)',
+            border: '1px solid rgba(229, 9, 20, 0.35)',
+            borderRadius: '12px',
+            padding: '1.4rem',
+            marginBottom: '1.8rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            boxShadow: '0 8px 25px rgba(0,0,0,0.3)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
+                <div style={{ background: 'rgba(229, 9, 20, 0.2)', color: 'var(--primary)', padding: '0.65rem', borderRadius: '10px', marginTop: '0.1rem', flexShrink: 0 }}>
+                  <MapPin size={26} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--primary)', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '1px', marginBottom: '0.2rem' }}>
+                    SEDE OFICIAL DE LA DEFINICIÓN PRESENCIAL
+                  </div>
+                  <h3 style={{ margin: '0 0 0.3rem', fontSize: '1.3rem', color: '#fff', fontWeight: 900 }}>
+                    Círculo Italiano, Santa Fe
+                  </h3>
+                  <p style={{ margin: 0, color: '#d1d5db', fontSize: '0.92rem', lineHeight: 1.5 }}>
+                    <strong>Dirección:</strong> Hipólito Irigoyen 2451, S3000BLF Santa Fe de la Vera Cruz, Santa Fe
+                  </p>
+                </div>
+              </div>
+
+              {/* Botones de Google Maps e Instagram */}
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignSelf: 'center' }}>
+                <a
+                  href="https://www.google.com/maps/place/Restaurante+C%C3%ADrculo+Italiano/@-31.6426088,-60.7039608,17z/data=!3m1!4b1!4m6!3m5!1s0x95b5a9bc780a3999:0xeb57be25b6b32fc0!8m2!3d-31.6426088!4d-60.7039608!16s%2Fg%2F1tgmxg53!5m1!1e4?entry=ttu&g_ep=EgoyMDI2MTAyMC4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.6rem 1.1rem',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    color: '#60a5fa',
+                    border: '1px solid rgba(59, 130, 246, 0.4)',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <MapPin size={15} /> Ver en Google Maps <ExternalLink size={14} />
+                </a>
+
+                <a
+                  href="https://www.instagram.com/circuloitalianosf/"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    padding: '0.6rem 1.1rem',
+                    background: 'rgba(225, 48, 108, 0.15)',
+                    color: '#f472b6',
+                    border: '1px solid rgba(225, 48, 108, 0.4)',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Instagram @circuloitalianosf <ExternalLink size={14} />
+                </a>
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.82rem', color: '#9ca3af', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.65rem' }}>
+              Los 4 equipos clasificados de la fase online disputarán las semifinales y la gran final presencial en el Círculo Italiano. Recordá que el equipo debe garantizar la asistencia de sus 5 integrantes para participar en esta etapa.
             </div>
           </div>
 
