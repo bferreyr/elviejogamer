@@ -50,11 +50,23 @@ export default function TournamentRegistration() {
     accepted_fairplay: false,
     accepted_commitment: false,
     accepted_data_public: false,
-    accepted_image_promo: 'Autorizo',
 
     // Sección 7 - Comentarios
     comments: ''
   });
+
+  // Estado para feedback de copia de datos bancarios
+  const [copiedField, setCopiedField] = useState('');
+
+  const handleCopy = (text, fieldName) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => {
+        setCopiedField('');
+      }, 2000);
+    }
+  };
 
   // Files
   const [logoFile, setLogoFile] = useState(null);
@@ -192,7 +204,6 @@ export default function TournamentRegistration() {
       data.append('accepted_fairplay', formData.accepted_fairplay);
       data.append('accepted_commitment', formData.accepted_commitment);
       data.append('accepted_data_public', formData.accepted_data_public);
-      data.append('accepted_image_promo', formData.accepted_image_promo);
       data.append('comments', formData.comments);
 
       // Archivos
@@ -334,6 +345,99 @@ export default function TournamentRegistration() {
       padding: '0 1.5rem',
       minHeight: '80vh'
     }}>
+      {/* ========================================================
+          MEGA BANNER: PREMIO $1.000.000 (GRADIENTE ANIMADO)
+         ======================================================== */}
+      <div style={{
+        textAlign: 'center',
+        padding: '3rem 1.5rem',
+        background: 'linear-gradient(135deg, rgba(28, 12, 16, 0.95) 0%, rgba(14, 14, 18, 0.98) 50%, rgba(22, 12, 28, 0.95) 100%)',
+        border: '2px solid rgba(245, 158, 11, 0.5)',
+        borderRadius: '20px',
+        marginBottom: '2rem',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), 0 0 50px rgba(245, 158, 11, 0.25)'
+      }}>
+        {/* Glow de fondo */}
+        <div style={{
+          position: 'absolute',
+          top: '-70px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '500px',
+          height: '200px',
+          background: 'radial-gradient(ellipse, rgba(245, 158, 11, 0.35) 0%, rgba(229, 9, 20, 0.25) 50%, transparent 80%)',
+          filter: 'blur(70px)',
+          pointerEvents: 'none'
+        }} />
+
+        {/* Shimmer superior en movimiento */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: 'linear-gradient(90deg, #ff4b4b, #f59e0b, #fbbf24, #ec4899, #ff4b4b)',
+          backgroundSize: '200% 100%',
+          animation: 'prizeGradientMove 3s linear infinite'
+        }} />
+
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          background: 'rgba(245, 158, 11, 0.15)',
+          border: '1px solid rgba(245, 158, 11, 0.5)',
+          color: '#fbbf24',
+          padding: '0.45rem 1.4rem',
+          borderRadius: '999px',
+          fontSize: '0.85rem',
+          fontWeight: 900,
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          marginBottom: '0.8rem'
+        }}>
+          <Sparkles size={16} /> POZO OFICIAL EN PREMIOS <Sparkles size={16} />
+        </div>
+
+        {/* Cifra Gigante con Gradiente Animado en Movimiento Continuo */}
+        <div className="prize-animated-gradient" style={{
+          fontSize: 'clamp(4.2rem, 12vw, 8rem)',
+          fontWeight: 950,
+          letterSpacing: '-2px',
+          lineHeight: 1,
+          margin: '0.2rem 0',
+          fontFamily: "'Outfit', sans-serif"
+        }}>
+          $1.000.000
+        </div>
+
+        <div style={{
+          fontSize: 'clamp(1.25rem, 3.8vw, 2.2rem)',
+          fontWeight: 900,
+          letterSpacing: '3px',
+          color: '#ffffff',
+          textTransform: 'uppercase',
+          marginBottom: '0.6rem',
+          textShadow: '0 2px 15px rgba(0,0,0,0.9)'
+        }}>
+          UN MILLÓN DE PESOS EN PREMIOS
+        </div>
+
+        <p style={{
+          color: '#e5e7eb',
+          fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
+          maxWidth: '720px',
+          margin: '0 auto',
+          fontWeight: 600,
+          lineHeight: 1.5
+        }}>
+          ¡Inscribí a tu equipo en la <strong>COPA VIEJO GAMER</strong> y competí por el pozo más grande de la región!
+        </p>
+      </div>
+
       {/* Hero Header */}
       <div style={{
         textAlign: 'center',
@@ -1180,6 +1284,158 @@ export default function TournamentRegistration() {
             </div>
           </div>
 
+          {/* DATOS BANCARIOS OFICIALES PARA LA TRANSFERENCIA */}
+          <div style={{
+            background: 'linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, rgba(229, 9, 20, 0.05) 100%)',
+            border: '2px solid rgba(245, 158, 11, 0.4)',
+            borderRadius: '14px',
+            padding: '1.6rem',
+            marginBottom: '1.8rem',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.4)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8rem', marginBottom: '1.2rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.8rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{ background: '#f59e0b', color: '#000', padding: '0.4rem', borderRadius: '8px', display: 'flex' }}>
+                  <CreditCard size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 900, textTransform: 'uppercase' }}>
+                    DATOS DE LA CUENTA PARA TRANSFERIR
+                  </h3>
+                  <div style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+                    Realizá la transferencia por <strong>AR$ 150.000</strong> a la siguiente cuenta bancaria oficial:
+                  </div>
+                </div>
+              </div>
+              <span style={{ background: 'rgba(255, 115, 0, 0.2)', color: '#ff8800', border: '1px solid rgba(255, 115, 0, 0.4)', padding: '0.25rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800 }}>
+                NARANJA X
+              </span>
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '1rem',
+              marginBottom: '1.2rem'
+            }}>
+              {/* Alias */}
+              <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', display: 'block', fontWeight: 700 }}>
+                    ALIAS DE TRANSFERENCIA
+                  </span>
+                  <strong style={{ fontSize: '1.25rem', color: '#f59e0b', letterSpacing: '0.5px', fontFamily: 'monospace' }}>
+                    COPA.VIEJOGAMER
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('COPA.VIEJOGAMER', 'alias')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.45rem 0.85rem',
+                    background: copiedField === 'alias' ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.08)',
+                    color: copiedField === 'alias' ? '#22c55e' : '#fff',
+                    border: copiedField === 'alias' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {copiedField === 'alias' ? <><Check size={14} /> ¡Copiado!</> : <><Copy size={14} /> Copiar</>}
+                </button>
+              </div>
+
+              {/* Cuenta */}
+              <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', display: 'block', fontWeight: 700 }}>
+                    NÚMERO DE CUENTA
+                  </span>
+                  <strong style={{ fontSize: '1.2rem', color: '#fff', letterSpacing: '0.5px', fontFamily: 'monospace' }}>
+                    1838155882
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('1838155882', 'cuenta')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.45rem 0.85rem',
+                    background: copiedField === 'cuenta' ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.08)',
+                    color: copiedField === 'cuenta' ? '#22c55e' : '#fff',
+                    border: copiedField === 'cuenta' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {copiedField === 'cuenta' ? <><Check size={14} /> ¡Copiado!</> : <><Copy size={14} /> Copiar</>}
+                </button>
+              </div>
+
+              {/* Titular */}
+              <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '1rem' }}>
+                <span style={{ fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', display: 'block', fontWeight: 700 }}>
+                  NOMBRE DEL TITULAR
+                </span>
+                <strong style={{ fontSize: '1.05rem', color: '#fff' }}>
+                  Mariano Ernesto Ponce Zavalla
+                </strong>
+                <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.2rem' }}>
+                  Destinatario verificado
+                </div>
+              </div>
+
+              {/* CUIL / CUIT */}
+              <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', display: 'block', fontWeight: 700 }}>
+                    CUIL / CUIT DEL TITULAR
+                  </span>
+                  <strong style={{ fontSize: '1.15rem', color: '#fff', fontFamily: 'monospace' }}>
+                    20362662975
+                  </strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('20362662975', 'cuit')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    padding: '0.45rem 0.85rem',
+                    background: copiedField === 'cuit' ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.08)',
+                    color: copiedField === 'cuit' ? '#22c55e' : '#fff',
+                    border: copiedField === 'cuit' ? '1px solid #22c55e' : '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {copiedField === 'cuit' ? <><Check size={14} /> ¡Copiado!</> : <><Copy size={14} /> Copiar</>}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: '8px', padding: '0.8rem 1rem', fontSize: '0.85rem', color: '#86efac' }}>
+              <CheckCircle2 size={18} color="#22c55e" style={{ flexShrink: 0 }} />
+              <span>
+                <strong>Importante:</strong> Transferí exactamente <strong>AR$ 150.000</strong>. Una vez realizada la transferencia, subí el comprobante debajo para que la organización valide el cupo de tu equipo.
+              </span>
+            </div>
+          </div>
+
           {/* 25. Titular del pago */}
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
             <label style={labelStyle}>
@@ -1359,27 +1615,6 @@ export default function TournamentRegistration() {
                 32. <strong>Difusión de datos públicos del equipo:</strong> Autorizo la publicación de nombres del equipo, TAG, nicknames, resultados y estadísticas competitivas en fixtures, redes sociales y transmisiones oficiales. <span style={{ color: 'var(--primary)' }}>*</span>
               </span>
             </label>
-
-            {/* 33. Uso promocional de imagen y voz */}
-            <div style={{ marginTop: '0.8rem', padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px' }}>
-              <label style={{ ...labelStyle, fontSize: '0.95rem', marginBottom: '0.6rem', display: 'block' }}>
-                33. Uso promocional de imagen y voz <span style={{ color: 'var(--primary)' }}>*</span>
-              </label>
-              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', padding: '0.5rem 1rem', background: 'rgba(229, 9, 20, 0.15)', border: '1px solid var(--primary)', borderRadius: '6px', color: '#fff', fontWeight: 700 }}>
-                <input
-                  type="radio"
-                  name="accepted_image_promo"
-                  value="Autorizo"
-                  checked={formData.accepted_image_promo === 'Autorizo'}
-                  onChange={handleChange}
-                  required
-                />
-                <span>Autorizo</span>
-              </label>
-              <span style={{ ...hintStyle, display: 'block', marginTop: '0.6rem' }}>
-                Esta respuesta expresa únicamente la preferencia del capitán. La organización deberá obtener las autorizaciones individuales necesarias de los jugadores para usos promocionales de su imagen y voz.
-              </span>
-            </div>
           </div>
         </div>
 

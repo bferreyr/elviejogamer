@@ -1407,9 +1407,6 @@ export default function Admin() {
                   <div style={{color: selectedReg.accepted_data_public ? '#4ade80' : '#ef4444'}}>
                     {selectedReg.accepted_data_public ? '✓' : '✗'} 32. Difusión de nombres, TAG y resultados
                   </div>
-                  <div style={{color: '#fff'}}>
-                    33. Uso de imagen y voz: <span style={{color: '#4ade80'}}>{selectedReg.accepted_image_promo || 'Autorizo'}</span>
-                  </div>
                 </div>
               </div>
 
