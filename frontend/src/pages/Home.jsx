@@ -95,28 +95,28 @@ export default function Home() {
         </div>
         <div className="interactive-pc">
           <img src="/assets/pc_inside.jpg" alt="Interior de la PC El Viejo Gamer" className="pc-image" />
-          <div className="hotspot" style={{top: '40%', left: '41%'}}>
+          <div className="hotspot" style={{top: '40%', left: '41%'}} tabIndex={0} role="button" aria-label="Procesador y Refrigeración">
             <div className="hotspot-pulse"></div>
             <div className="hotspot-content">
               <h5>Procesador & Refri</h5>
               <p>AMD Ryzen 5 5600G con Refrigeracion por Aire.</p>
             </div>
           </div>
-          <div className="hotspot" style={{top: '65%', left: '43%'}}>
+          <div className="hotspot" style={{top: '65%', left: '43%'}} tabIndex={0} role="button" aria-label="Placa de Video">
             <div className="hotspot-pulse"></div>
             <div className="hotspot-content">
               <h5>Placa de Video</h5>
               <p>NVIDIA GeForce RTX 1660 para exprimir al máximo tus FPS.</p>
             </div>
           </div>
-          <div className="hotspot" style={{top: '37%', left: '49%'}}>
+          <div className="hotspot" style={{top: '37%', left: '49%'}} tabIndex={0} role="button" aria-label="Memoria RAM">
             <div className="hotspot-pulse"></div>
             <div className="hotspot-content">
               <h5>Memoria RAM</h5>
               <p>16GB a 3200MHz. Latencia Ultra Baja.</p>
             </div>
           </div>
-          <div className="hotspot" style={{top: '85%', left: '35%'}}>
+          <div className="hotspot" style={{top: '85%', left: '35%'}} tabIndex={0} role="button" aria-label="Fuente de Energía">
             <div className="hotspot-pulse"></div>
             <div className="hotspot-content">
               <h5>Fuente de Energía</h5>

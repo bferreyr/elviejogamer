@@ -25,7 +25,7 @@ export default function Matches() {
   }, []);
 
   return (
-    <div className="matches-container" style={{maxWidth: '1200px', margin: '100px auto 0', padding: '2rem', minHeight: '80vh'}}>
+    <div className="matches-container" style={{maxWidth: '1200px', margin: '100px auto 0', minHeight: '80vh'}}>
       <div className="section-header" style={{textAlign: 'center', marginBottom: '3rem'}}>
         <h2>ÚLTIMAS <span className="text-gradient">PARTIDAS</span></h2>
         <p>Resultados oficiales de los servidores de El Viejo Gamer</p>
@@ -48,27 +48,29 @@ export default function Matches() {
               
               return (
                 <Link to={`/partidas/${match.id}`} key={match.id} style={{textDecoration: 'none'}}>
-                  <div style={{
-                    background: 'rgba(25,25,30,0.8)', 
-                    border: '1px solid rgba(255,255,255,0.05)', 
-                    borderRadius: '12px', 
-                    padding: '1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'}
+                  <div 
+                    className="match-card-item"
+                    style={{
+                      background: 'rgba(25,25,30,0.8)', 
+                      border: '1px solid rgba(255,255,255,0.05)', 
+                      borderRadius: '12px', 
+                      padding: '1.5rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                    onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'}
                   >
                     <div className="match-list-item-flex">
-                      <div style={{width: '150px', textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                      <div className="match-map-badge" style={{width: '150px', textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                         <div style={{fontSize: '0.8rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem'}}>Mapa</div>
                         <MapLogo mapName={match.map_name} />
                       </div>
                       
-                      <div style={{display: 'flex', alignItems: 'center', gap: '1.5rem'}}>
+                      <div className="match-scores-wrapper" style={{display: 'flex', alignItems: 'center', gap: '1.5rem'}}>
                         <div style={{textAlign: 'right'}}>
                           <div style={{fontSize: '0.8rem', color: '#60a5fa', fontWeight: 'bold'}}>CT</div>
                           <div style={{fontSize: '2rem', fontWeight: '900', color: ctWon || isTie ? '#fff' : '#6b7280'}}>{match.team_ct_score}</div>
@@ -81,7 +83,7 @@ export default function Matches() {
                       </div>
                     </div>
 
-                    <div style={{display: 'flex', gap: '2rem', color: '#9ca3af', fontSize: '0.9rem'}}>
+                    <div className="match-card-meta" style={{display: 'flex', gap: '2rem', color: '#9ca3af', fontSize: '0.9rem'}}>
                       <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                         <Clock size={16} /> {match.duration}
                       </div>

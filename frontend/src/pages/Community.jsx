@@ -36,28 +36,28 @@ export default function Community() {
 
   return (
     <div style={{background: '#09090b', minHeight: '100vh', paddingTop: '100px', fontFamily: 'Inter, sans-serif', color: '#fff'}}>
-      <div style={{maxWidth: '1200px', margin: '0 auto', padding: '2rem'}}>
+      <div style={{maxWidth: '1200px', margin: '0 auto'}} className="community-container">
         
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', flexWrap: 'wrap', gap: '2rem'}}>
+        <div className="community-header-flex" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', flexWrap: 'wrap', gap: '1.5rem'}}>
           <div>
-            <h1 style={{fontSize: '3rem', fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(to right, #f97316, #eab308)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <Users size={40} color="#f97316" /> COMUNIDAD
+            <h1 className="community-title" style={{fontWeight: 900, margin: '0 0 0.5rem', background: 'linear-gradient(to right, #f97316, #eab308)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+              <Users size={36} color="#f97316" /> COMUNIDAD
             </h1>
-            <p style={{color: '#9ca3af', fontSize: '1.1rem'}}>Encontrá a tus amigos y mira sus estadísticas</p>
+            <p style={{color: '#9ca3af', fontSize: '1rem', margin: 0}}>Encontrá a tus amigos y mirá sus estadísticas</p>
           </div>
 
-          <form onSubmit={handleSearch} style={{display: 'flex', gap: '1rem', width: '100%', maxWidth: '400px'}}>
+          <form onSubmit={handleSearch} className="community-search-form" style={{display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '400px'}}>
             <div style={{position: 'relative', flex: 1}}>
               <input 
                 type="text" 
                 placeholder="Buscar jugador..." 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                style={{width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#18181b', color: '#fff', outline: 'none', fontSize: '1rem'}}
+                style={{width: '100%', padding: '0.85rem 1rem 0.85rem 2.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#18181b', color: '#fff', outline: 'none', fontSize: '0.95rem'}}
               />
-              <Search style={{position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af'}} size={20} />
+              <Search style={{position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af'}} size={18} />
             </div>
-            <button type="submit" style={{padding: '0 1.5rem', background: '#f97316', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.3s'}}>
+            <button type="submit" style={{padding: '0 1.25rem', background: '#f97316', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.3s'}}>
               Buscar
             </button>
           </form>

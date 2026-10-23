@@ -63,7 +63,7 @@ export default function Profile() {
 
   return (
     <div style={{background: '#09090b', minHeight: '100vh', paddingTop: '80px', fontFamily: 'Inter, sans-serif', color: '#fff'}}>
-      <div style={{maxWidth: '1400px', margin: '0 auto', padding: '2rem'}} className="profile-layout">
+      <div style={{maxWidth: '1400px', margin: '0 auto'}} className="profile-layout profile-container">
         
         {/* Left Sidebar */}
         <div style={{display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>

@@ -188,7 +188,7 @@ export default function MatchDetails() {
 
   return (
     <div style={{background: '#09090b', minHeight: '100vh', paddingTop: '80px', fontFamily: 'Inter, sans-serif'}}>
-      <div style={{maxWidth: '1400px', margin: '0 auto', padding: '2rem'}}>
+      <div style={{maxWidth: '1400px', margin: '0 auto'}} className="match-details-container">
         
         <div style={{marginBottom: '1rem'}}>
           <Link to="/partidas" style={{display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#f97316', textDecoration: 'none', fontWeight: '600', fontSize: '0.9rem'}}>
@@ -197,18 +197,20 @@ export default function MatchDetails() {
         </div>
 
         {/* HERO HEADER */}
-        <div style={{
-          position: 'relative',
-          background: `linear-gradient(to right, rgba(20,20,22,0.95), rgba(20,20,22,0.8)), url('/assets/hero_bg.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          borderRadius: '12px',
-          padding: '3rem 2rem',
-          border: '1px solid #f97316',
-          marginBottom: '2rem',
-          boxShadow: '0 10px 30px rgba(249,115,22,0.1)'
-        }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+        <div 
+          className="match-hero-banner"
+          style={{
+            position: 'relative',
+            background: `linear-gradient(to right, rgba(20,20,22,0.95), rgba(20,20,22,0.8)), url('/assets/hero_bg.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            borderRadius: '12px',
+            border: '1px solid #f97316',
+            marginBottom: '2rem',
+            boxShadow: '0 10px 30px rgba(249,115,22,0.1)'
+          }}
+        >
+          <div className="match-hero-top-bar" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem'}}>
             <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.3)', padding: '0.2rem 0.8rem', borderRadius: '20px', color: '#f97316', fontSize: '0.8rem', fontWeight: 'bold'}}>
               <PlaySquare size={14} /> Match Oficial
             </div>
