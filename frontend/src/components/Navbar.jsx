@@ -133,20 +133,20 @@ export default function Navbar() {
         </div>
 
         {/* Right Nav Actions */}
-        <div className="nav-actions">
+        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           {user ? (
             <>
               {user.is_admin && (
-                <Link to="/admin" className="secondary-btn admin-desktop-btn" style={{ padding: '0.45rem 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(74,222,128,0.4)', display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
+                <Link to="/admin" className="secondary-btn admin-desktop-btn" style={{ height: '38px', padding: '0 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(74,222,128,0.4)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(74,222,128,0.1)', color: '#4ade80' }}>
                   <Shield size={15} /> <span className="btn-label-desktop">Panel Admin</span>
                 </Link>
               )}
               
-              <div style={{position: 'relative'}} ref={notifRef}>
+              <div style={{position: 'relative', display: 'flex', alignItems: 'center'}} ref={notifRef}>
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)} 
                   className="secondary-btn notif-btn" 
-                  style={{ padding: '0.45rem', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ height: '38px', width: '38px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                   aria-label="Notificaciones"
                 >
                   <Bell size={18} />
@@ -182,19 +182,19 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link to="/perfil" className="secondary-btn profile-nav-btn" style={{ padding: '0.45rem 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'var(--primary)', color: '#000', borderColor: 'var(--primary)' }}>
+              <Link to="/perfil" className="secondary-btn profile-nav-btn" style={{ height: '38px', padding: '0 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: 'var(--primary)', color: '#000', borderColor: 'var(--primary)' }}>
                 <img src={user.avatar_url} style={{ width: '20px', height: '20px', borderRadius: '50%' }} alt="Avatar" />
                 <span className="profile-btn-text">Mi Perfil</span>
               </Link>
             </>
           ) : (
-            <a href="/auth/steam" className="secondary-btn login-nav-btn" style={{ padding: '0.45rem 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <a href="/auth/steam" className="secondary-btn login-nav-btn" style={{ height: '38px', padding: '0 0.85rem', borderRadius: '6px', fontSize: '0.85rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}>
               <User size={16} /> <span className="login-btn-text">Entrar</span>
             </a>
           )}
 
           {/* WhatsApp CTA (Desktop only) */}
-          <a href="https://wa.me/5493425900075" className="cta-btn desktop-cta" target="_blank" rel="noreferrer">
+          <a href="https://wa.me/5493425900075" className="cta-btn desktop-cta" target="_blank" rel="noreferrer" style={{ height: '38px', padding: '0 1rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
             <MessageCircle size={16} /> <span>Contactanos</span>
           </a>
 
@@ -205,6 +205,7 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(prev => !prev)}
             aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileMenuOpen}
+            style={{ height: '38px', width: '38px', padding: 0 }}
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
