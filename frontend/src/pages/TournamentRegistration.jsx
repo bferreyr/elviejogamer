@@ -626,7 +626,7 @@ export default function TournamentRegistration() {
             Ver Mapa <ExternalLink size={13} />
           </a>
           <a
-            href="https://www.instagram.com/circuloitalianosf/"
+            href="https://instagram.com/circuloitaliano_sf"
             target="_blank"
             rel="noreferrer"
             style={{ color: '#f472b6', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: 700 }}
@@ -1292,7 +1292,7 @@ export default function TournamentRegistration() {
                 </a>
 
                 <a
-                  href="https://www.instagram.com/circuloitalianosf/"
+                  href="https://instagram.com/circuloitaliano_sf"
                   target="_blank"
                   rel="noreferrer"
                   style={{
@@ -1310,7 +1310,7 @@ export default function TournamentRegistration() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  Instagram @circuloitalianosf <ExternalLink size={14} />
+                  Instagram @circuloitaliano_sf <ExternalLink size={14} />
                 </a>
               </div>
             </div>
