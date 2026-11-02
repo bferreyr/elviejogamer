@@ -594,6 +594,79 @@ export default function TournamentRegistration() {
           </div>
         </div>
 
+        {/* Cartel Informativo: Acceso al Reglamento Oficial */}
+        <div style={{
+          marginTop: '1.5rem',
+          background: 'radial-gradient(ellipse at top left, rgba(229, 9, 20, 0.15) 0%, rgba(18, 18, 22, 0.95) 70%)',
+          border: '1px solid rgba(229, 9, 20, 0.4)',
+          borderRadius: '12px',
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1.5rem',
+          flexWrap: 'wrap',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: '280px', flex: 1 }}>
+            <div style={{
+              background: 'rgba(229, 9, 20, 0.2)',
+              color: '#ff4b4b',
+              padding: '0.75rem',
+              borderRadius: '10px',
+              border: '1px solid rgba(229, 9, 20, 0.4)',
+              flexShrink: 0
+            }}>
+              <FileText size={26} />
+            </div>
+            <div>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                color: '#ff4b4b',
+                textTransform: 'uppercase',
+                letterSpacing: '0.8px',
+                marginBottom: '0.2rem'
+              }}>
+                Lectura Obligatoria
+              </div>
+              <h3 style={{ margin: '0 0 0.25rem', color: '#fff', fontSize: '1.1rem', fontWeight: 800 }}>
+                Reglamento Oficial – Copa Viejo Gamer
+              </h3>
+              <p style={{ margin: 0, color: '#9ca3af', fontSize: '0.88rem', lineHeight: 1.4 }}>
+                Consultá la estructura del torneo, sistema de veto de mapas, normas de puntualidad, contingencias técnicas y fair play.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            to="/torneo/reglamento"
+            target="_blank"
+            rel="noreferrer"
+            className="secondary-btn"
+            style={{
+              padding: '0.75rem 1.4rem',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: 'rgba(229, 9, 20, 0.15)',
+              border: '1px solid var(--primary)',
+              color: '#fff',
+              borderRadius: '6px',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <FileText size={16} color="var(--primary)" /> Ver Reglamento Completo <ExternalLink size={14} />
+          </Link>
+        </div>
+
         {/* Banner de Sede Presencial en Hero */}
         <div style={{
           marginTop: '1.5rem',
@@ -1664,8 +1737,30 @@ export default function TournamentRegistration() {
         <div className="form-section-card" style={sectionCardStyle}>
           <div style={sectionHeaderStyle}>
             <div style={sectionNumberBadge}>6</div>
-            <div>
-              <h2 style={sectionTitleStyle}>REGLAMENTO Y CONDICIONES</h2>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8rem' }}>
+                <h2 style={sectionTitleStyle}>REGLAMENTO Y CONDICIONES</h2>
+                <Link
+                  to="/torneo/reglamento"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    color: '#ff4b4b',
+                    background: 'rgba(229, 9, 20, 0.1)',
+                    border: '1px solid rgba(229, 9, 20, 0.3)',
+                    padding: '0.35rem 0.8rem',
+                    borderRadius: '6px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <FileText size={14} /> Abrir Reglamento en otra pestaña <ExternalLink size={13} />
+                </Link>
+              </div>
               <p style={sectionSubtitleStyle}>Aceptación obligatoria de los términos competitivos</p>
             </div>
           </div>
