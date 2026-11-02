@@ -108,6 +108,7 @@ export default function Admin() {
   };
 
   useEffect(() => {
+    document.title = 'Panel de Administración | El Viejo Gamer';
     loadInitialData();
   }, []);
 

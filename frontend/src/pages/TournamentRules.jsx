@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   FileText, ShieldCheck, Trophy, Swords, Users, Monitor, 
   MapPin, AlertTriangle, Scale, Clock, Headphones, Tv, Award,
@@ -7,6 +7,10 @@ import {
 import { Link } from 'react-router-dom';
 
 export default function TournamentRules() {
+  useEffect(() => {
+    document.title = 'Reglamento Copa Viejo Gamer | El Viejo Gamer';
+  }, []);
+
   const [activeSection, setActiveSection] = useState('sec-1');
 
   const scrollToSection = (id) => {

@@ -8,6 +8,7 @@ export default function Matches() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Partidas CS2 | El Viejo Gamer';
     fetch('/api/matches')
       .then(res => res.json())
       .then(data => {

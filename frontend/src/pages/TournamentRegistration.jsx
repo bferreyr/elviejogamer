@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Trophy, Users, Shield, Calendar, Sparkles, CheckCircle2, Swords, 
   AlertTriangle, CreditCard, MapPin, Clock, Upload, FileText, Check, 
@@ -8,6 +8,10 @@ import {
 import { Link } from 'react-router-dom';
 
 export default function TournamentRegistration() {
+  useEffect(() => {
+    document.title = 'Inscripción Copa Viejo Gamer | El Viejo Gamer';
+  }, []);
+
   // Form State
   const [formData, setFormData] = useState({
     // Sección 1 - Equipo

@@ -9,6 +9,7 @@ export default function AlbumView() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    document.title = 'Álbum de Fotos | El Viejo Gamer';
     // Check if admin to show delete buttons
     fetch('/api/current_user')
       .then(res => res.ok ? res.json() : null)

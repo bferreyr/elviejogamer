@@ -7,6 +7,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Galería de Fotos | El Viejo Gamer';
     fetch('/api/albums')
       .then(res => res.json())
       .then(data => {

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
+    document.title = 'El Viejo Gamer | Cyber & Esports Bootcamps en Santa Fe';
     if (window.location.hash) {
       const id = window.location.hash.substring(1);
       const el = document.getElementById(id);

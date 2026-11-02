@@ -8,6 +8,7 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Comunidad de Jugadores | El Viejo Gamer';
     fetchUsers();
   }, []);
 

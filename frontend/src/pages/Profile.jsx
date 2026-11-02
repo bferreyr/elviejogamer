@@ -21,6 +21,11 @@ export default function Profile() {
       })
       .then(data => {
         setUser(data);
+        if (data && data.display_name) {
+          document.title = `Perfil de ${data.display_name} | El Viejo Gamer`;
+        } else {
+          document.title = 'Perfil de Jugador | El Viejo Gamer';
+        }
         if (!steam_id) setIsCurrentUser(true);
         if (data.friend_status) setFriendStatus(data.friend_status);
         setLoading(false);

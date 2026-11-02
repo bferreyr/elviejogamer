@@ -13,6 +13,11 @@ export default function MatchDetails() {
       .then(res => res.json())
       .then(data => {
         setMatch(data);
+        if (data && data.map_name) {
+          document.title = `Partida ${data.map_name} | El Viejo Gamer`;
+        } else {
+          document.title = `Detalles de Partida | El Viejo Gamer`;
+        }
         setLoading(false);
       })
       .catch(err => {
