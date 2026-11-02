@@ -1682,7 +1682,7 @@ export default function TournamentRegistration() {
                 style={checkboxInputStyle}
               />
               <span style={checkboxTextStyle}>
-                28. <strong>Aceptación del reglamento:</strong> Declaro haber leído y aceptado el reglamento oficial del torneo. <span style={{ color: 'var(--primary)' }}>*</span>
+                28. <strong>Aceptación del reglamento:</strong> Declaro haber leído y aceptado el <Link to="/torneo/reglamento" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline', fontWeight: 700 }}>reglamento oficial del torneo (Ver aquí)</Link>. <span style={{ color: 'var(--primary)' }}>*</span>
               </span>
             </label>
 

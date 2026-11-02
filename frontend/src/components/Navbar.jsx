@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageCircle, User, Shield, Bell, ChevronDown, Trophy, Menu, X } from 'lucide-react';
+import { MessageCircle, User, Shield, Bell, ChevronDown, Trophy, Menu, X, FileText } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -124,6 +124,14 @@ export default function Navbar() {
                 >
                   <Trophy size={16} className="dropdown-item-icon" />
                   <span className="dropdown-item-title">INSCRIPCION COPA VIEJO GAMER</span>
+                </Link>
+                <Link 
+                  to="/torneo/reglamento" 
+                  className="nav-dropdown-item"
+                  onClick={() => setTournamentDropdownOpen(false)}
+                >
+                  <FileText size={16} className="dropdown-item-icon" />
+                  <span className="dropdown-item-title">REGLAMENTO OFICIAL</span>
                 </Link>
               </div>
             )}
@@ -288,6 +296,17 @@ export default function Navbar() {
                   >
                     <div className="sublink-badge">COPA VIEJO GAMER</div>
                     <span className="sublink-title">Inscripción Oficial &rarr;</span>
+                  </Link>
+                  <Link 
+                    to="/torneo/reglamento" 
+                    className="mobile-sublink highlight"
+                    style={{ marginTop: '0.5rem', background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                    onClick={closeMobile}
+                  >
+                    <div className="sublink-badge" style={{ color: '#9ca3af' }}>DOCUMENTO OFICIAL</div>
+                    <span className="sublink-title" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <FileText size={13} color="var(--primary)" /> Reglamento de la Copa &rarr;
+                    </span>
                   </Link>
                 </div>
               )}
