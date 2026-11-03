@@ -10,6 +10,32 @@ import { Link } from 'react-router-dom';
 export default function TournamentRegistration() {
   useEffect(() => {
     document.title = 'Inscripción Copa Viejo Gamer | El Viejo Gamer';
+
+    // Meta Pixel Code
+    if (!window.fbq) {
+      (function(f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function() {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = true;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = true;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+      window.fbq('init', '29095229026829007');
+    }
+
+    if (window.fbq) {
+      window.fbq('track', 'PageView');
+    }
   }, []);
 
   // Form State
@@ -222,6 +248,13 @@ export default function TournamentRegistration() {
 
       const json = await res.json();
       if (res.ok && json.success) {
+        if (window.fbq) {
+          window.fbq('track', 'CompleteRegistration', {
+            content_name: 'Copa Viejo Gamer',
+            currency: 'ARS',
+            value: 150000
+          });
+        }
         setSubmitted(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
